@@ -1,7 +1,7 @@
 # Личный проект «Шесть городов»
 
 * Студент: [Pavel Iugai](https://up.htmlacademy.ru/react/8/user/1462123).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Вохмянин](https://htmlacademy.ru/profile/id530823).
 
 ---
 
