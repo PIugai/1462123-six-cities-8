@@ -1,4 +1,4 @@
-function RoomPage(): JSX.Element {
+function PageRoom(): JSX.Element {
 
   return (
     <main className="page__main page__main--property">
@@ -303,4 +303,4 @@ function RoomPage(): JSX.Element {
   );
 }
 
-export default RoomPage;
+export default PageRoom;

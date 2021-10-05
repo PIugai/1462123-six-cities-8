@@ -1,4 +1,4 @@
-function SignInPage(): JSX.Element {
+function PageSignIn(): JSX.Element {
 
   return (
     <main className="page__main page__main--login">
@@ -29,4 +29,4 @@ function SignInPage(): JSX.Element {
   );
 }
 
-export default SignInPage;
+export default PageSignIn;

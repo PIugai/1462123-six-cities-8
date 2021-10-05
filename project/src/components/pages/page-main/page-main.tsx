@@ -1,11 +1,11 @@
-import PlaceCard from '../place-card/place-card';
-import {Place} from '../../types/place';
+import PlaceCard from '../../place-card/place-card';
+import {Place} from '../../../types/place';
 
-type MainPageProps = {
+type PageMainProps = {
   places: Place[]
 }
 
-function MainPage({places}: MainPageProps): JSX.Element {
+function PageMain({places}: PageMainProps): JSX.Element {
 
   return (
     <main className="page__main page__main--index">
@@ -79,4 +79,4 @@ function MainPage({places}: MainPageProps): JSX.Element {
   );
 }
 
-export default MainPage;
+export default PageMain;
