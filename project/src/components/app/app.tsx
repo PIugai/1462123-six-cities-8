@@ -5,19 +5,19 @@ import PageFavorites from '../pages/page-favorites/page-favorites';
 import PageRoom from '../pages/page-room/page-room';
 import Page404 from '../pages/page-404/page-404';
 import PrivateRoute from '../private-route/private-route';
-import {Place} from '../../types/place';
+import {Offer} from '../../types/offer';
 import {AppRoute, AuthorizationStatus} from '../../const';
 
 type AppProps = {
-  places: Place[]
+  offers: Offer[]
 }
 
-function App({places}: AppProps): JSX.Element {
+function App({offers}: AppProps): JSX.Element {
   return (
     <BrowserRouter>
       <Switch>
         <Route path={AppRoute.Main} exact>
-          <PageMain places={places}/>
+          <PageMain offers={offers}/>
         </Route>
         <Route path={AppRoute.SignIn} exact component={PageSignIn} />
         <PrivateRoute
@@ -25,9 +25,13 @@ function App({places}: AppProps): JSX.Element {
           path={AppRoute.Favorites}
           authorizationStatus={AuthorizationStatus.NoAuth}
         >
-          <PageFavorites />
+          <PageFavorites offers={offers}/>
         </PrivateRoute>
-        <Route path={AppRoute.Room} exact component={PageRoom} />
+        <Route path={AppRoute.Room} exact >
+          <PageRoom
+            offers={offers}
+          />
+        </Route>
         <Route component={Page404} />
       </Switch>
     </BrowserRouter>
