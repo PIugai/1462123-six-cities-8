@@ -94,7 +94,7 @@ function PageMain({offers}: PageMainProps): JSX.Element {
               <PlacesList offers={offers} setIdActiveOffer={setIdActiveOffer}/>
             </section>
             <div className="cities__right-section">
-              <Map city={offers[0].city.location} offers={offers} idActiveOffer={idActiveOffer}/>
+              <Map city={offers[0].city.location} offers={offers} className='cities' idActiveOffer={idActiveOffer}/>
             </div>
           </div>
         </div>

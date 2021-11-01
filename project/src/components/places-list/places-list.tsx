@@ -3,15 +3,16 @@ import {Offer} from '../../types/offer';
 
 type PlacesListProps = {
   offers: Offer[],
-  setIdActiveOffer: (a: number|null) => void,
+  setIdActiveOffer?: (a: number|null) => void;
+  isPageRoomPlacesList?: boolean,
 }
 
-function PlacesList({offers, setIdActiveOffer}: PlacesListProps): JSX.Element {
+function PlacesList({offers, setIdActiveOffer, isPageRoomPlacesList}: PlacesListProps): JSX.Element {
 
   return (
-    <div className="cities__places-list places__list tabs__content">
+    <div className={isPageRoomPlacesList ? 'near-places__list places__list' : 'cities__places-list places__list tabs content'}>
       {offers.map((offer) => (
-        <PlaceCard key={offer.id} offer={offer} setIdActiveOffer={setIdActiveOffer} />
+        <PlaceCard key={offer.id} offer={offer} setIdActiveOffer={setIdActiveOffer}/>
       ))}
     </div>
   );
