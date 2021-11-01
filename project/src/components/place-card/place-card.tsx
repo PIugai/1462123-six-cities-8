@@ -1,11 +1,12 @@
 import {Offer} from '../../types/offer';
+import {MouseEvent} from 'react';
 
 type PlaceCardProps = {
   offer: Offer
-  setActive: (id: number | undefined) => void;
+  setIdActiveOffer: (a: number|null) => void;
 }
 
-function PlaceCard({offer, setActive}: PlaceCardProps): JSX.Element {
+function PlaceCard({offer, setIdActiveOffer}: PlaceCardProps): JSX.Element {
   const {
     id,
     isPremium,
@@ -16,7 +17,7 @@ function PlaceCard({offer, setActive}: PlaceCardProps): JSX.Element {
   } = offer;
 
   return (
-    <article className="cities__place-card place-card" onMouseEnter={() => setActive(id)} onMouseLeave={() => setActive(undefined)}>
+    <article className="cities__place-card place-card"  onMouseOver={(event: MouseEvent<HTMLElement>) => {setIdActiveOffer(id);}} onMouseOut={(event: MouseEvent<HTMLElement>) => {setIdActiveOffer(null);}}>
       {isPremium ? <div className="place-card__mark"> <span>Premium</span> </div> : ''}
       <div className="cities__image-wrapper place-card__image-wrapper">
         <a href="#">
