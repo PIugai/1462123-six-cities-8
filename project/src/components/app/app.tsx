@@ -17,7 +17,7 @@ function App({offers}: AppProps): JSX.Element {
     <BrowserRouter>
       <Switch>
         <Route path={AppRoute.Main} exact>
-          <PageMain offers={offers}/>
+          <PageMain />
         </Route>
         <Route path={AppRoute.SignIn} exact component={PageSignIn} />
         <PrivateRoute

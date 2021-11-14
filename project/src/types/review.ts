@@ -4,6 +4,7 @@ type Review = {
     id: number,
     name: string
     avatarUrl: string,
+    isPro: boolean
   }
   date: Date,
   rating: number,

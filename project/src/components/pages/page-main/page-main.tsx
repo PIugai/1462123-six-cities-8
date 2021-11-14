@@ -1,14 +1,35 @@
 import { useState } from 'react';
-import {Offer} from '../../../types/offer';
+import CitiesList from '../../cities-list/cities-list';
 import Logo from '../../logo/logo';
 import PlacesList from '../../places-list/places-list';
 import Map from '../../map/map';
+import {connect, ConnectedProps} from 'react-redux';
+import {State} from '../../../types/state';
 
-type PageMainProps = {
-  offers: Offer[]
-}
+const getCitiesCoordinates = (city:string) => {
+  switch(city){
+    case 'Paris':{
+      return {latitude: 48.8534,longitude: 2.3488,zoom: 10};
+    }
+    case 'Amsterdam':{
+      return {latitude: 52.3909553943508,longitude: 4.85309666406198,zoom: 10};
+    }
+    default :{
+      return {latitude: 52.3909553943508,longitude: 4.85309666406198,zoom: 10};
+    }
+  }
+};
 
-function PageMain({offers}: PageMainProps): JSX.Element {
+const mapStateToProps = ({currentCity, offers}:State) => ({
+  currentCity,
+  offers,
+});
+
+const connector = connect(mapStateToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+function PageMain({offers, currentCity}: PropsFromRedux): JSX.Element {
   const [idActiveOffer, setIdActiveOffer] = useState<null | number>(null);
 
   return (
@@ -42,40 +63,7 @@ function PageMain({offers}: PageMainProps): JSX.Element {
       <main className="page__main page__main--index">
         <h1 className="visually-hidden">Cities</h1>
         <div className="tabs">
-          <section className="locations container">
-            <ul className="locations__list tabs__list">
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Paris</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Cologne</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Brussels</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item tabs__item--active">
-                  <span>Amsterdam</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Hamburg</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Dusseldorf</span>
-                </a>
-              </li>
-            </ul>
-          </section>
+          <CitiesList currentCity={currentCity}/>
         </div>
         <div className="cities">
           <div className="cities__places-container container">
@@ -94,7 +82,7 @@ function PageMain({offers}: PageMainProps): JSX.Element {
               <PlacesList offers={offers} setIdActiveOffer={setIdActiveOffer}/>
             </section>
             <div className="cities__right-section">
-              <Map city={offers[0].city.location} offers={offers} className='cities' idActiveOffer={idActiveOffer}/>
+              <Map city={getCitiesCoordinates(currentCity)} offers={offers} className='cities' idActiveOffer={idActiveOffer}/>
             </div>
           </div>
         </div>
