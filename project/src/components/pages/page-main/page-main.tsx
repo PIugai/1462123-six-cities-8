@@ -91,4 +91,4 @@ function PageMain({offers, currentCity}: PropsFromRedux): JSX.Element {
   );
 }
 
-export default PageMain;
+export default connector(PageMain);
