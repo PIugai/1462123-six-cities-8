@@ -11,7 +11,7 @@ type CitiesListProps = {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
-  HandleCityChange(evt : MouseEvent<HTMLAnchorElement>, currentCity: string) {
+  handleCityChange(evt : MouseEvent<HTMLAnchorElement>, currentCity: string) {
     evt.preventDefault();
     if(evt.currentTarget.dataset.name && evt.currentTarget.dataset.name !== currentCity){
       dispatch(setCity(evt.currentTarget.dataset.name));
@@ -25,12 +25,12 @@ const connector = connect(null, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type ConnectedComponentProps = PropsFromRedux & CitiesListProps;
 
-function CitiesList ({currentCity, HandleCityChange}:ConnectedComponentProps): JSX.Element {
+function CitiesList ({currentCity, handleCityChange}:ConnectedComponentProps): JSX.Element {
 
   return (
     <section className="locations container">
       <ul className="locations__list tabs__list">
-        {Object.values(CitiesNames).map((city) => <CityItem key={city} city={city} currentCity={currentCity} onCityChange={HandleCityChange}/>)}
+        {Object.values(CitiesNames).map((city) => <CityItem key={city} city={city} currentCity={currentCity} onCityChange={handleCityChange}/>)}
       </ul>
     </section>);
 }
