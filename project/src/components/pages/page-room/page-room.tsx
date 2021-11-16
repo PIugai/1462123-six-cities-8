@@ -5,7 +5,7 @@ import { AppRoute } from '../../../const';
 import { Offer } from '../../../types/offer';
 import Map from '../../map/map';
 import ReviewsList from '../../reviews-list/reviews-list';
-import {reviews} from '../../../mocks/reviews';
+import { reviews } from '../../../mocks/reviews';
 import Logo from '../../logo/logo';
 import PlacesList from '../../places-list/places-list';
 

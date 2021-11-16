@@ -3,8 +3,11 @@ import CitiesList from '../../cities-list/cities-list';
 import Logo from '../../logo/logo';
 import PlacesList from '../../places-list/places-list';
 import Map from '../../map/map';
-import {connect, ConnectedProps} from 'react-redux';
-import {State} from '../../../types/state';
+import { connect, ConnectedProps} from 'react-redux';
+import { State } from '../../../types/state';
+import Sort from '../../sort/sort';
+import { Offer } from '../../../types/offer';
+import { SortOption } from '../../../const';
 
 const getCitiesCoordinates = (city:string) => {
   switch(city){
@@ -20,17 +23,40 @@ const getCitiesCoordinates = (city:string) => {
   }
 };
 
-const mapStateToProps = ({currentCity, offers}:State) => ({
+type PageMainProps = {
+  offers: Offer[],
+}
+
+const getSortedOffers = (currentSortOption : string, offers: Offer[]) => {
+  switch(currentSortOption){
+    case SortOption.PriceHighToLow: {
+      return offers.slice().sort((offerA, offerB) => offerB.price - offerA.price);
+    }
+    case SortOption.PriceLowToHigh: {
+      return offers.slice().sort((offerA, offerB) => offerA.price - offerB.price);
+    }
+    case SortOption.TopRatedFirst: {
+      return offers.slice().sort((offerA, offerB) => offerB.rating - offerA.rating);
+    }
+    default: {
+      return offers;
+    }
+  }
+};
+
+const mapStateToProps = ({currentCity, currentSortOption}:State) => ({
   currentCity,
-  offers,
+  currentSortOption,
 });
 
 const connector = connect(mapStateToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
+type ConnectedComponentProps = PropsFromRedux & PageMainProps;
 
-function PageMain({offers, currentCity}: PropsFromRedux): JSX.Element {
+function PageMain({offers, currentCity, currentSortOption}: ConnectedComponentProps): JSX.Element {
   const [idActiveOffer, setIdActiveOffer] = useState<null | number>(null);
+  const sortedOffers = getSortedOffers(currentSortOption, offers);
 
   return (
     <div className="page page--gray page--main">
@@ -70,16 +96,8 @@ function PageMain({offers, currentCity}: PropsFromRedux): JSX.Element {
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
               <b className="places__found">{offers.length} places to stay in Amsterdam</b>
-              <form className="places__sorting" action="#" method="get">
-                <span className="places__sorting-caption">Sort by</span>
-                <span className="places__sorting-type" tabIndex={0}>
-                  Popular
-                  <svg className="places__sorting-arrow" width="7" height="4">
-                    <use xlinkHref="#icon-arrow-select"></use>
-                  </svg>
-                </span>
-              </form>
-              <PlacesList offers={offers} setIdActiveOffer={setIdActiveOffer}/>
+              <Sort/>
+              <PlacesList offers={sortedOffers} setIdActiveOffer={setIdActiveOffer}/>
             </section>
             <div className="cities__right-section">
               <Map city={getCitiesCoordinates(currentCity)} offers={offers} className='cities' idActiveOffer={idActiveOffer}/>

@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent, useState} from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 function NewCommentForm(): JSX.Element {
   const [commentPost, setCommentPost] = useState({

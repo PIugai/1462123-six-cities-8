@@ -1,10 +1,10 @@
-export type Location = {
+type Location = {
   latitude: number,
   longitude: number,
   zoom: number
 }
 
-export type Offer = {
+type Offer = {
   id: number,
   title: string;
   previewImage: string,
@@ -34,3 +34,5 @@ export type Offer = {
   maxAdults: number;
   rating: number;
 };
+
+export type { Offer, Location };

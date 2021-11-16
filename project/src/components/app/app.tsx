@@ -5,19 +5,24 @@ import PageFavorites from '../pages/page-favorites/page-favorites';
 import PageRoom from '../pages/page-room/page-room';
 import Page404 from '../pages/page-404/page-404';
 import PrivateRoute from '../private-route/private-route';
-import {Offer} from '../../types/offer';
-import {AppRoute, AuthorizationStatus} from '../../const';
+import { connect, ConnectedProps } from 'react-redux';
+import { State } from '../../types/state';
+import { AppRoute, AuthorizationStatus } from '../../const';
 
-type AppProps = {
-  offers: Offer[]
-}
+const mapStateToProps = ({offers}:State) => ({
+  offers,
+});
 
-function App({offers}: AppProps): JSX.Element {
+const connector = connect(mapStateToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+function App({offers}: PropsFromRedux): JSX.Element {
   return (
     <BrowserRouter>
       <Switch>
         <Route path={AppRoute.Main} exact>
-          <PageMain />
+          <PageMain offers={offers}/>
         </Route>
         <Route path={AppRoute.SignIn} exact component={PageSignIn} />
         <PrivateRoute
@@ -38,4 +43,5 @@ function App({offers}: AppProps): JSX.Element {
   );
 }
 
-export default App;
+export default connector(App);
+export { App };

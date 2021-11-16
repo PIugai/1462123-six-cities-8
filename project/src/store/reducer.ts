@@ -1,13 +1,14 @@
 import { State } from '../types/state';
-import { Actions, ActionType } from '../types/action';
+import { Actions } from '../types/action';
 import OFFERS from '../mocks/offers';
-import { CitiesNames } from '../const';
+import { CitiesNames, SortOption, ActionType } from '../const';
 
 const getOffersInCurrentCity = (cityName:string) => OFFERS.slice().filter((offer) => offer.city.name === cityName);
 
 const initialState : State = {
   currentCity: CitiesNames.Paris,
   offers: getOffersInCurrentCity(CitiesNames.Paris),
+  currentSortOption: SortOption.Popular,
 };
 
 const reducer = (state : State = initialState, action: Actions): State => {
@@ -18,10 +19,13 @@ const reducer = (state : State = initialState, action: Actions): State => {
     case ActionType.SetOffers: {
       return {...state, offers: getOffersInCurrentCity(state.currentCity)};
     }
+    case ActionType.SetSortOption: {
+      return {...state, currentSortOption: action.payload.currentSortOption};
+    }
     default: {
       return state;
     }
   }
 };
 
-export {reducer};
+export { reducer };

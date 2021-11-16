@@ -1,4 +1,4 @@
-import {Offer} from '../types/offer';
+import { Offer } from '../types/offer';
 
 const OFFERS: Offer[] = [
   {
@@ -136,6 +136,40 @@ const OFFERS: Offer[] = [
     },
     maxAdults: 4,
     rating: 2.8,
+  },
+  {
+    id: 4,
+    bedrooms: 2,
+    city: {
+      location: {
+        latitude: 52.3909553943508,
+        longitude: 4.85309666406198,
+        zoom: 10,
+      },
+      name: 'Paris',
+    },
+    description: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam.',
+    goods: ['Heating', 'Washing machine', 'Dishwasher'],
+    host: {
+      avatarUrl: 'img/1.png',
+      id: 3,
+      isPro: true,
+      name: 'Anna',
+    },
+    images: ['img/1.png', 'img/2.png'],
+    isFavorite: false,
+    isPremium: true,
+    location: {
+      latitude: 48.8534,
+      longitude: 2.3488,
+      zoom: 10,
+    },
+    maxAdults: 4,
+    previewImage: 'img/apartment-01.jpg',
+    price: 122,
+    rating: 4.8,
+    title: 'The First place in Paris',
+    type: 'apartment',
   },
 ];
 

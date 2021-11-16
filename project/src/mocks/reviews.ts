@@ -63,4 +63,4 @@ const reviews: Review[] = [
   },
 ];
 
-export {reviews};
+export { reviews };
