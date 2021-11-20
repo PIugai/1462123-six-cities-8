@@ -8,16 +8,26 @@ import PrivateRoute from '../private-route/private-route';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../types/state';
 import { AppRoute, AuthorizationStatus } from '../../const';
+import PageLoading from '../pages/page-loading/page-loading';
 
-const mapStateToProps = ({offers}:State) => ({
+const isCheckedAuth = (authorizationStatus: AuthorizationStatus): boolean =>
+  authorizationStatus === AuthorizationStatus.Unknown;
+
+const mapStateToProps = ({offers, authorizationStatus, isDataLoaded}:State) => ({
   offers,
+  authorizationStatus,
+  isDataLoaded,
 });
 
 const connector = connect(mapStateToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function App({offers}: PropsFromRedux): JSX.Element {
+function App({offers, authorizationStatus, isDataLoaded}: PropsFromRedux): JSX.Element {
+  if(!isDataLoaded || isCheckedAuth(authorizationStatus)){
+    return <PageLoading />;
+  }
+
   return (
     <BrowserRouter>
       <Switch>
@@ -28,7 +38,7 @@ function App({offers}: PropsFromRedux): JSX.Element {
         <PrivateRoute
           exact
           path={AppRoute.Favorites}
-          authorizationStatus={AuthorizationStatus.NoAuth}
+          render={() => <PageFavorites offers={offers}/>}
         >
           <PageFavorites offers={offers}/>
         </PrivateRoute>

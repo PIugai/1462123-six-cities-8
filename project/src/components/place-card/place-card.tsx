@@ -1,4 +1,8 @@
 import { Offer } from '../../types/offer';
+import {Link} from 'react-router-dom';
+
+import {getRatingInStars} from '../../utils';
+
 
 type PlaceCardProps = {
   offer: Offer
@@ -12,6 +16,7 @@ function PlaceCard({offer, setIdActiveOffer}: PlaceCardProps): JSX.Element {
     previewImage,
     price,
     title,
+    rating,
     type,
   } = offer;
 
@@ -49,12 +54,12 @@ function PlaceCard({offer, setIdActiveOffer}: PlaceCardProps): JSX.Element {
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{width: '80%'}}></span>
+            <span style={{width: getRatingInStars(rating)}}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
         <h2 className="place-card__name">
-          <a href="#">{title}</a>
+          <Link to={`/offer/${id}`}>{title}</Link>
         </h2>
         <p className="place-card__type">{type}</p>
       </div>

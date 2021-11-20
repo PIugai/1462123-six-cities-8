@@ -5,9 +5,10 @@ import PlacesList from '../../places-list/places-list';
 import Map from '../../map/map';
 import { connect, ConnectedProps} from 'react-redux';
 import { State } from '../../../types/state';
+import { Link } from 'react-router-dom';
 import Sort from '../../sort/sort';
 import { Offer } from '../../../types/offer';
-import { SortOption } from '../../../const';
+import { AppRoute, SortOption } from '../../../const';
 
 const getCitiesCoordinates = (city:string) => {
   switch(city){
@@ -69,11 +70,11 @@ function PageMain({offers, currentCity, currentSortOption}: ConnectedComponentPr
             <nav className="header__nav">
               <ul className="header__nav-list">
                 <li className="header__nav-item user">
-                  <a className="header__nav-link header__nav-link--profile" href="#">
+                  <Link className="header__nav-link header__nav-link--profile" to={AppRoute.SignIn}>
                     <div className="header__avatar-wrapper user__avatar-wrapper">
                     </div>
                     <span className="header__user-name user__name">Oliver.conner@gmail.com</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="header__nav-item">
                   <a className="header__nav-link" href="#">

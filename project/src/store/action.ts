@@ -1,21 +1,34 @@
-import { SetCity, SetOffers, SetSortOption } from '../types/action';
-import { ActionType } from '../const';
-const setCity = (cityName:string) : SetCity => ({
+import { ActionType, AuthorizationStatus } from '../const';
+import { Offer } from '../types/offer';
+
+const setCity = (CitiesNames:string) => ({
   type: ActionType.SetCity,
   payload: {
-    currentCity: cityName,
+    currentCity: CitiesNames,
   },
-});
+} as const);
 
-const setOffers = () : SetOffers => ({
+const setOffers = (offers: Offer[]) => ({
   type: ActionType.SetOffers,
-});
+  payload: {
+    offers,
+  },
+} as const);
 
-const setSortOption = (sortOption: string) : SetSortOption => ({
+const setSortOption = (sortOption: string) => ({
   type: ActionType.SetSortOption,
   payload: {
     currentSortOption: sortOption,
   },
-});
+} as const);
 
-export { setCity, setOffers, setSortOption };
+const requireAuthorization = (authStatus: AuthorizationStatus) => ({
+  type: ActionType.RequireAuthorization,
+  payload: authStatus,
+} as const);
+
+const requireLogout = () => ({
+  type: ActionType.RequireLogout,
+} as const);
+
+export {setCity, setOffers, setSortOption, requireAuthorization, requireLogout};

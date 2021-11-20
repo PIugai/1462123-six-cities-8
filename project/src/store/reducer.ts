@@ -1,14 +1,13 @@
 import { State } from '../types/state';
 import { Actions } from '../types/action';
-import OFFERS from '../mocks/offers';
-import { CitiesNames, SortOption, ActionType } from '../const';
-
-const getOffersInCurrentCity = (cityName:string) => OFFERS.slice().filter((offer) => offer.city.name === cityName);
+import { CitiesNames, SortOption, ActionType, AuthorizationStatus } from '../const';
 
 const initialState : State = {
   currentCity: CitiesNames.Paris,
-  offers: getOffersInCurrentCity(CitiesNames.Paris),
+  offers: [],
   currentSortOption: SortOption.Popular,
+  authorizationStatus: AuthorizationStatus.Unknown,
+  isDataLoaded: false,
 };
 
 const reducer = (state : State = initialState, action: Actions): State => {
@@ -17,10 +16,20 @@ const reducer = (state : State = initialState, action: Actions): State => {
       return {...state, currentCity: action.payload.currentCity};
     }
     case ActionType.SetOffers: {
-      return {...state, offers: getOffersInCurrentCity(state.currentCity)};
+      return {...state, offers: action.payload.offers};
     }
     case ActionType.SetSortOption: {
       return {...state, currentSortOption: action.payload.currentSortOption};
+    }
+    case ActionType.RequireAuthorization:{
+      return {
+        ...state,
+        authorizationStatus: action.payload,
+        isDataLoaded: true,
+      };
+    }
+    case ActionType.RequireLogout: {
+      return {...state, authorizationStatus: AuthorizationStatus.NoAuth};
     }
     default: {
       return state;
