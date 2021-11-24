@@ -6,14 +6,13 @@ import { Provider } from 'react-redux';
 import { reducer } from './store/reducer';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createAPI } from './services/api';
-import { requireAuthorization } from './store/action';
-import { AuthorizationStatus } from './const';
+import { logOut } from './store/action';
 import thunk from 'redux-thunk';
 import { ThunkAppDispatch } from './types/action';
 import { fetchOffersAction, checkAuthAction } from './store/api-actions';
 
 const api = createAPI(
-  () => store.dispatch(requireAuthorization(AuthorizationStatus.NoAuth)),
+  () => store.dispatch(logOut()),
 );
 
 const store = createStore(reducer, composeWithDevTools(

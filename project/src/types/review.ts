@@ -6,9 +6,18 @@ type Review = {
     avatarUrl: string,
     isPro: boolean
   }
-  date: Date,
+  date: string,
   rating: number,
   comment: string,
 };
 
-export type { Review };
+type ReviewResponse = Omit<Review, 'user'> & {
+  user: {
+    'id': number,
+    'is_pro': boolean,
+    'name': string,
+    'avatar_url': string,
+  }
+}
+
+export type { Review, ReviewResponse };

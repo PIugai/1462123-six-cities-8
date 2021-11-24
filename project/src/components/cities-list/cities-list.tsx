@@ -1,34 +1,41 @@
-import { Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
-import { Actions } from '../../types/action';
-import {setCity} from '../../store/action';
 import { CitiesNames } from '../../const';
-import CityItem from '../city-item/city-item';
 
 type CitiesListProps = {
   currentCity: string;
+  onCityChange: (city: CitiesNames) => void,
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
-  onCityChange(currentCity: string) {
-    dispatch(setCity(currentCity));
-  },
-});
-
-const connector = connect(null, mapDispatchToProps);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-type ConnectedComponentProps = PropsFromRedux & CitiesListProps;
-
-function CitiesList ({currentCity, onCityChange}:ConnectedComponentProps): JSX.Element {
-
+function CitiesList ({currentCity, onCityChange}: CitiesListProps):JSX.Element {
   return (
-    <section className="locations container">
-      <ul className="locations__list tabs__list">
-        {Object.values(CitiesNames).map((city) => <CityItem key={city} city={city} currentCity={currentCity} onCityClick={onCityChange}/>)}
-      </ul>
-    </section>);
+    <>
+      <h1 className="visually-hidden">Cities</h1>
+      <div className="tabs">
+        <section className="locations container">
+          <ul className="locations__list tabs__list">
+            {Object.values(CitiesNames).map((city) => {
+              const isActive = currentCity === city;
+              return (
+                (
+                  <li key={city} className="locations__item">
+                    <a
+                      onClick={(evt) => {
+                        evt.preventDefault();
+                        onCityChange(city);
+                      }}
+                      className={`locations__item-link tabs__item ${isActive ? 'tabs__item--active' : ''}`}
+                      href="/"
+                    >
+                      <span>{city}</span>
+                    </a>
+                  </li>
+                )
+              );
+            })}
+          </ul>
+        </section>
+      </div>
+    </>
+  );
 }
 
-export default connector(CitiesList);
-export { CitiesList };
+export default CitiesList;

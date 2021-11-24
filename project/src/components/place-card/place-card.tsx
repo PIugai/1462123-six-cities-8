@@ -1,51 +1,85 @@
+import { Link } from 'react-router-dom';
 import { Offer } from '../../types/offer';
-import {Link} from 'react-router-dom';
+import { AppRoute } from '../../const';
+import { getRatingInStars } from '../../utils';
 
-import {getRatingInStars} from '../../utils';
+const PreviewImgSize = {
+  default: {
+    height: '200',
+    width: '260',
+  },
+  favorite: {
+    height: '110',
+    width: '150',
+  },
+};
 
+type OfferCardProps = {
+  offer: Offer,
+  rootClassName: string,
+  imageWrapperClassName: string,
+  infoWrapperClassName?: string,
+  imageWidth?: string,
+  imageHeight?: string,
+  onMouseEnter?: (offerData: Offer) => void,
+  onMouseLeave?: () => void,
+};
 
-type PlaceCardProps = {
-  offer: Offer
-  setIdActiveOffer?: (a: number|null) => void;
-}
+type SpecificOfferCardProps = Pick<OfferCardProps, 'offer' | 'onMouseEnter' | 'onMouseLeave'>;
 
-function PlaceCard({offer, setIdActiveOffer}: PlaceCardProps): JSX.Element {
+function OfferCard(props: OfferCardProps): JSX.Element {
   const {
-    id,
-    isPremium,
-    previewImage,
-    price,
-    title,
-    rating,
-    type,
-  } = offer;
+    offer,
+    rootClassName = '',
+    imageWrapperClassName = '',
+    infoWrapperClassName = '',
+    imageHeight = PreviewImgSize.default.height,
+    imageWidth = PreviewImgSize.default.width,
+    onMouseEnter,
+    onMouseLeave,
+  } = props;
 
   const handleMouseEnter = () => {
-    if(setIdActiveOffer){
-      setIdActiveOffer(id);
-    }
+    onMouseEnter && onMouseEnter(offer);
   };
+
   const handleMouseLeave = () => {
-    if(setIdActiveOffer){
-      setIdActiveOffer(null);
-    }
+    onMouseLeave && onMouseLeave();
   };
 
   return (
-    <article className="cities__place-card place-card"  onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      {isPremium ? <div className="place-card__mark"> <span>Premium</span> </div> : ''}
-      <div className="cities__image-wrapper place-card__image-wrapper">
-        <a href="#">
-          <img className="place-card__image" src={previewImage} width="260" height="200" alt="Place" />
-        </a>
+    <article
+      className={`place-card ${rootClassName}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {offer.isPremium && (
+        <div className="place-card__mark"><span>Premium</span></div>
+      )}
+      <div className={`place-card__image-wrapper ${imageWrapperClassName}`}>
+        <img
+          className="place-card__image"
+          src={offer.previewImage}
+          width={imageWidth}
+          height={imageHeight}
+          alt="Place"
+        />
       </div>
-      <div className="place-card__info">
+      <div className={`place-card__info ${infoWrapperClassName}`}>
         <div className="place-card__price-wrapper">
           <div className="place-card__price">
-            <b className="place-card__price-value">&euro;{price}</b>
-            <span className="place-card__price-text">&#47;&nbsp;night</span>
+            <b className="place-card__price-value">
+              &euro;{offer.price}
+            </b>
+            <span className="place-card__price-text">
+              &#47;&nbsp;night
+            </span>
           </div>
-          <button className="place-card__bookmark-button button" type="button">
+          <button
+            className={`place-card__bookmark-button button
+            ${offer.isFavorite ? 'place-card__bookmark-button--active' : ''}`}
+            type="button"
+          >
             <svg className="place-card__bookmark-icon" width="18" height="19">
               <use xlinkHref="#icon-bookmark"></use>
             </svg>
@@ -54,17 +88,56 @@ function PlaceCard({offer, setIdActiveOffer}: PlaceCardProps): JSX.Element {
         </div>
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
-            <span style={{width: getRatingInStars(rating)}}></span>
+            <span style={{width: getRatingInStars(offer.rating)}}/>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
         <h2 className="place-card__name">
-          <Link to={`/offer/${id}`}>{title}</Link>
+          <Link to={`${AppRoute.Room}/${offer.id}`}>
+            {offer.title}
+          </Link>
         </h2>
-        <p className="place-card__type">{type}</p>
+        <p className="place-card__type">{offer.type}</p>
       </div>
     </article>
   );
 }
 
-export default PlaceCard;
+function FavoriteCard(props: SpecificOfferCardProps) {
+  return (
+    <OfferCard
+      imageHeight={PreviewImgSize.favorite.height}
+      imageWidth={PreviewImgSize.favorite.width}
+      imageWrapperClassName="favorites__image-wrapper"
+      infoWrapperClassName="favorites__card-info"
+      rootClassName="favorites__card"
+      {...props}
+    />
+  );
+}
+
+function PlaceCard(props: SpecificOfferCardProps) {
+  return (
+    <OfferCard
+      imageWrapperClassName="cities__image-wrapper"
+      rootClassName="cities__place-card"
+      {...props}
+    />
+  );
+}
+
+function NearPlacesCard(props: SpecificOfferCardProps) {
+  return (
+    <OfferCard
+      imageWrapperClassName="near-places__image-wrapper"
+      rootClassName="near-places__card"
+      {...props}
+    />
+  );
+}
+
+OfferCard.Main = PlaceCard;
+OfferCard.Favorite = FavoriteCard;
+OfferCard.Offer = NearPlacesCard;
+
+export default OfferCard;

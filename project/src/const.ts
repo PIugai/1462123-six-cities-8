@@ -2,7 +2,7 @@ enum AppRoute {
   Main = '/',
   SignIn = '/login',
   Favorites = '/favorites',
-  Room = '/offer/:id',
+  Room = '/offer',
 }
 
 enum AuthorizationStatus {
@@ -11,18 +11,11 @@ enum AuthorizationStatus {
   Unknown = 'UNKNOWN',
 }
 
-const enum ActionType {
-  SetCity = 'main-page/set-city',
-  SetSortOption = 'main-screen/set-sort-option',
-  SetOffers = 'data/set-offers',
-  RequireAuthorization = 'user/require-authorization',
-  RequireLogout = 'user/require-logout',
-}
-
 const enum APIRoute {
   Offers = '/hotels',
-  Login = '/login',
-  Logout = '/logout',
+  LogIn = '/login',
+  LogOut = '/logout',
+  Reviews = '/comments',
 }
 
 enum CitiesNames {
@@ -41,4 +34,4 @@ enum SortOption {
   TopRatedFirst = 'Top rated first',
 }
 
-export {AppRoute, AuthorizationStatus, ActionType, CitiesNames, SortOption, APIRoute};
+export {AppRoute, AuthorizationStatus, CitiesNames, SortOption, APIRoute};

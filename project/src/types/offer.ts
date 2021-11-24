@@ -4,31 +4,24 @@ type Location = {
   zoom: number
 }
 
-type OfferFromServer = {
-  bedrooms: number,
-  city: {
-    location: Location,
-    name: string
-  },
-  description: string,
-  goods: string[],
+type OfferResponse = Omit<
+  Offer,
+  | 'host'
+  | 'isFavorite'
+  | 'isPremium'
+  | 'previewImage'
+  | 'maxAdults'
+  > & {
   host: {
     'avatar_url': string,
-    id: number,
+    'id': number,
     'is_pro': boolean,
-    name: string
+    'name': string,
   },
-  id: number,
-  images: string[],
   'is_favorite': boolean,
   'is_premium': boolean,
-  location: Location,
   'max_adults': number,
   'preview_image': string,
-  price: number,
-  rating: number,
-  title: string,
-  type: string
 }
 
 type Offer = {
@@ -62,4 +55,4 @@ type Offer = {
   rating: number;
 };
 
-export type { Offer, Location, OfferFromServer };
+export type { Offer, Location, OfferResponse };

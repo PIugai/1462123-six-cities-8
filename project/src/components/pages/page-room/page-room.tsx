@@ -1,156 +1,240 @@
-import { useState } from 'react';
-import ReviewsForm from '../../reviews-form/reviews-form';
-import { useParams, Link } from 'react-router-dom';
-import { AppRoute } from '../../../const';
-import { Offer } from '../../../types/offer';
-import Map from '../../map/map';
+import { useEffect, useMemo } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { useParams } from 'react-router';
+import { State } from '../../../types/state';
+import { ThunkAppDispatch } from '../../../types/action';
+import {
+  fetchReviewsAction,
+  fetchCurrentOfferAction,
+  fetchNearbyOffersAction
+} from '../../../store/api-actions';
 import { getRatingInStars } from '../../../utils';
+import Header from '../../header/header';
+import OfferCard from '../../place-card/place-card';
+import OffersMap from '../../offers-map/offers-map';
+import Loader from '../../loader/loader';
+import Page404 from '../page-404/page-404';
 import ReviewsList from '../../reviews-list/reviews-list';
-import { reviews } from '../../../mocks/reviews';
-import Logo from '../../logo/logo';
-import PlacesList from '../../places-list/places-list';
+import ReviewForm from '../../reviews-form/reviews-form';
 
-type PageRoomProps = {
-  offers: Offer[]
-}
+const MAX_AMOUNT_IMAGES = 6;
 
-type Params = {
-  id: string;
-}
+const mapStateToProps = ({
+  currentOffer,
+  reviews,
+  nearbyOffers,
+  isReviewsLoading,
+  isCurrentOfferLoading,
+  isCurrentOfferLoadingError,
+  isNearbyOffersLoading,
+}: State) => ({
+  currentOffer,
+  reviews,
+  nearbyOffers,
+  isReviewsLoading,
+  isCurrentOfferLoading,
+  isCurrentOfferLoadingError,
+  isNearbyOffersLoading,
+});
 
-function PageRoom({offers}: PageRoomProps): JSX.Element {
-  const params: Params = useParams();
-  const currentRoomId = Number(params.id);
-  const currentRoom = offers.find((offer)=> offer.id === currentRoomId) as Offer;
-  const similarOffers = offers.filter((offer) => offer.id !== currentRoomId);
-  const {price, description, goods, title, city, isPremium, rating, type, bedrooms, maxAdults, images, host} = currentRoom;
-  const [idActiveOffer, setIdActiveOffer] = useState<null | number>(null);
+const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  fetchCurrentOffer: (offerId: string) => dispatch(fetchCurrentOfferAction(offerId)),
+  fetchReviews: (offerId: string) => dispatch(fetchReviewsAction(offerId)),
+  fetchNearbyOffer: (offerId: string) => dispatch(fetchNearbyOffersAction(offerId)),
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+function OfferPage(props: PropsFromRedux): JSX.Element {
+  const {
+    currentOffer,
+    reviews,
+    nearbyOffers,
+    fetchReviews,
+    fetchCurrentOffer,
+    fetchNearbyOffer,
+    isReviewsLoading,
+    isCurrentOfferLoading,
+    isCurrentOfferLoadingError,
+    isNearbyOffersLoading,
+  } = props;
+
+  const { offerId } = useParams<{ offerId: string }>();
+
+  useEffect(() => {
+    fetchReviews(offerId);
+    fetchCurrentOffer(offerId);
+    fetchNearbyOffer(offerId);
+  },[
+    fetchCurrentOffer,
+    fetchNearbyOffer,
+    fetchReviews,
+    offerId,
+  ]);
+
+  const offers = useMemo(() => {
+    if (!currentOffer) {
+      return [];
+    }
+    return [...nearbyOffers, currentOffer];
+  }, [currentOffer, nearbyOffers]);
+
+  const renderPageContent = () => {
+    if (isCurrentOfferLoadingError) {
+      return <Page404 />;
+    }
+    if (isCurrentOfferLoading) {
+      return <Loader />;
+    }
+    if (currentOffer) {
+      return (
+        <main className="page__main page__main--property">
+          <section className="property">
+            <div className="property__gallery-container container">
+              <div className="property__gallery">
+                {currentOffer.images.slice(0, MAX_AMOUNT_IMAGES).map((image) => (
+                  <div
+                    className="property__image-wrapper"
+                    key={image}
+                  >
+                    <img
+                      className="property__image"
+                      src={image}
+                      alt="Studio"
+                    />
+                  </div>
+                ))};
+              </div>
+            </div>
+            <div className="property__container container">
+              <div className="property__wrapper">
+                {currentOffer.isPremium && (
+                  <div className="property__mark">
+                    <span>Premium</span>
+                  </div>)}
+                <div className="property__name-wrapper">
+                  <h1 className="property__name">
+                    {currentOffer.title}
+                  </h1>
+                  <button className="property__bookmark-button button" type="button">
+                    <svg className="property__bookmark-icon" width="31" height="33">
+                      <use xlinkHref="#icon-bookmark"></use>
+                    </svg>
+                    <span className="visually-hidden">To bookmarks</span>
+                  </button>
+                </div>
+                <div className="property__rating rating">
+                  <div className="property__stars rating__stars">
+                    <span
+                      style={{width: getRatingInStars(currentOffer.rating)}}
+                    />
+                    <span className="visually-hidden">Rating</span>
+                  </div>
+                  <span
+                    className="property__rating-value rating__value"
+                  >{currentOffer.rating}
+                  </span>
+                </div>
+                <ul className="property__features">
+                  <li className="property__feature property__feature--entire">
+                    {currentOffer.type}
+                  </li>
+                  <li className="property__feature property__feature--bedrooms">
+                    {currentOffer.bedrooms} Bedrooms
+                  </li>
+                  <li className="property__feature property__feature--adults">
+                    Max {currentOffer.maxAdults} adults
+                  </li>
+                </ul>
+                <div className="property__price">
+                  <b className="property__price-value">&euro;{currentOffer.price}</b>
+                  <span className="property__price-text">&nbsp;night</span>
+                </div>
+                <div className="property__inside">
+                  <h2 className="property__inside-title">What&apos;s inside</h2>
+                  <ul className="property__inside-list">
+                    {currentOffer.goods.map((good) => (
+                      <li key={good} className="property__inside-item">
+                        {good}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="property__host">
+                  <h2 className="property__host-title">Meet the host</h2>
+                  <div className="property__host-user user">
+                    <div className={currentOffer.host.isPro ?
+                      'property__avatar-wrapper property__avatar-wrapper--pro user__avatar-wrapper' :
+                      'property__avatar-wrapper user__avatar-wrapper'}
+                    >
+                      <img
+                        className="property__avatar user__avatar"
+                        src={currentOffer.host.avatarUrl}
+                        width="74"
+                        height="74"
+                        alt="Host"
+                      />
+                    </div>
+                    <span className="property__user-name">
+                      {currentOffer.host.name}
+                    </span>
+                    {currentOffer.host.isPro && (
+                      <span className="property__user-status">
+                        Pro
+                      </span>
+                    )}
+                  </div>
+                  <div className="property__description">
+                    <p className="property__text">
+                      {currentOffer.description}
+                    </p>
+                  </div>
+                </div>
+                {isReviewsLoading ? <Loader /> : (
+                  <section className="property__reviews reviews">
+                    <ReviewsList reviews={reviews} />
+                    <ReviewForm />
+                  </section>
+                )}
+              </div>
+            </div>
+            {isNearbyOffersLoading ? <Loader /> : (
+              <section className="property__map map">
+                <OffersMap
+                  zoomOnOffer={false}
+                  offers={offers}
+                  activeOffer={currentOffer}
+                />
+              </section>
+            )}
+          </section>
+          {isNearbyOffersLoading ? <Loader /> : (
+            <div className="container">
+              <section className="near-places places">
+                <h2 className="near-places__title">Other places in the neighbourhood</h2>
+                <div className="near-places__list places__list">
+                  {nearbyOffers.map((nearbyOffer) => (
+                    <OfferCard.Offer key={nearbyOffer.id} offer={nearbyOffer} />
+                  ))}
+                </div>
+              </section>
+            </div>
+          )}
+        </main>
+      );
+    }
+  };
 
   return (
     <div className="page">
-
-      <header className="header">
-        <div className="container">
-          <div className="header__wrapper">
-            <div className="header__left">
-              <Logo />
-            </div>
-            <nav className="header__nav">
-              <ul className="header__nav-list">
-                <li className="header__nav-item user">
-                  <Link className="header__nav-link header__nav-link--profile" to={AppRoute.SignIn}>
-                    <div className="header__avatar-wrapper user__avatar-wrapper">
-                    </div>
-                    <span className="header__login">Sign in</span>
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      <main className="page__main page__main--property">
-        <section className="property">
-          <div className="property__gallery-container container">
-            <div className="property__gallery">
-              {images.map((image) => (
-                <div className="property__image-wrapper" key={image}>
-                  <img className="property__image" src={image} alt="Studio"/>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="property__container container">
-            <div className="property__wrapper">
-              {
-                isPremium &&
-              <div className="property__mark">
-                <span>Premium</span>
-              </div>
-              }
-              <div className="property__name-wrapper">
-                <h1 className="property__name">
-                  {title}
-                </h1>
-                <button className="property__bookmark-button button" type="button">
-                  <svg className="property__bookmark-icon" width="31" height="33">
-                    <use xlinkHref="#icon-bookmark"></use>
-                  </svg>
-                  <span className="visually-hidden">To bookmarks</span>
-                </button>
-              </div>
-              <div className="property__rating rating">
-                <div className="property__stars rating__stars">
-                  <span style={{width: getRatingInStars(rating)}}></span>
-                  <span style={{width: '80%'}}></span>
-                  <span className="visually-hidden">Rating</span>
-                </div>
-                <span className="property__rating-value rating__value">{rating}</span>
-                <span className="property__rating-value rating__value">4.8</span>
-              </div>
-              <ul className="property__features">
-                <li className="property__feature property__feature--entire">
-                  {type}
-                </li>
-                <li className="property__feature property__feature--bedrooms">
-                  {bedrooms} Bedrooms
-                </li>
-                <li className="property__feature property__feature--adults">
-                  Max {maxAdults} adults
-                </li>
-              </ul>
-              <div className="property__price">
-                <b className="property__price-value">&euro;{price}</b>
-                <span className="property__price-text">&nbsp;night</span>
-              </div>
-              <div className="property__inside">
-                <h2 className="property__inside-title">What&apos;s inside</h2>
-                <ul className="property__inside-list">
-                  {goods.map((feature) => (
-                    <li className="property__inside-item" key={feature}>
-                      {feature}
-                    </li>))}
-                </ul>
-              </div>
-              <div className="property__host">
-                <h2 className="property__host-title">Meet the host</h2>
-                <div className="property__host-user user">
-                  <div className="property__avatar-wrapper property__avatar-wrapper--pro user__avatar-wrapper">
-                    <img className="property__avatar user__avatar" src="img/avatar-angelina.jpg" width="74" height="74" alt="Host avatar" />
-                  </div>
-                  <span className="property__user-name">
-                    {host.name}
-                  </span>
-                  {
-                    host.isPro &&
-                      <span className="property__user-status">Pro</span>
-                  }
-                </div>
-                <div className="property__description">
-                  <p className="property__text">
-                    {description}
-                  </p>
-                </div>
-              </div>
-              <section className="property__reviews reviews">
-                <ReviewsList reviews={reviews} />
-                <ReviewsForm />
-              </section>
-            </div>
-          </div>
-          <Map className='property' city={city.location} offers={similarOffers} idActiveOffer={idActiveOffer}/>
-        </section>
-        <div className="container">
-          <section className="near-places places">
-            <h2 className="near-places__title">Other places in the neighbourhood</h2>
-            <PlacesList offers={similarOffers} setIdActiveOffer={setIdActiveOffer} isPageRoomPlacesList />
-          </section>
-        </div>
-      </main>
-
+      <Header />
+      {renderPageContent()}
     </div>
   );
 }
 
-export default PageRoom;
+export { OfferPage };
+
+export default connector(OfferPage);
+

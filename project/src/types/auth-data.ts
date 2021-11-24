@@ -3,4 +3,4 @@ type AuthData = {
   password: string;
 };
 
-export type {AuthData};
+export type { AuthData };

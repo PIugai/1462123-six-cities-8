@@ -1,76 +1,89 @@
 import {ThunkActionResult} from '../types/action';
-import {setOffers, requireAuthorization, requireLogout} from './action';
-import {saveToken, dropToken, Token} from '../services/token';
-import {APIRoute, AuthorizationStatus} from '../const';
-import { Offer, OfferFromServer } from '../types/offer';
-import {AuthData} from '../types/auth-data';
+import {
+  loadOffersComplete,
+  loadReviewsComplete,
+  loadOffersStart,
+  loadReviewsStart,
+  loadCurrentOfferComplete,
+  loadCurrentOfferStart,
+  loadCurrentOfferError,
+  loadNearbyOffersComplete,
+  loadNearbyOffersStart,
+  logIn,
+  logOut
+} from '../store/action';
+import { saveToken, dropToken } from '../services/token';
+import { APIRoute } from '../const';
+import { OfferResponse } from '../types/offer';
+import { ReviewResponse } from '../types/review';
+import { AuthData } from '../types/auth-data';
+import { adaptOfferToClient, adaptReviewToClient, adaptUserToClient } from '../utils';
+import { UserResponse } from '../types/user';
 
-const adaptToClient = (offers: OfferFromServer[]): Offer[] => {
-  const adaptedOffers: Offer[] = [];
-  offers.map((offer) => adaptedOffers.push({
-    bedrooms: offer.bedrooms,
-    city: {
-      location: {
-        latitude: offer.city.location.latitude,
-        longitude: offer.city.location.longitude,
-        zoom: offer.city.location.zoom,
-      },
-      name: offer.city.name,
-    },
-    description: offer.description,
-    goods: offer.goods,
-    host: {
-      avatarUrl: offer.host.avatar_url,
-      id: offer.host.id,
-      isPro: offer.host.is_pro,
-      name: offer.host.name,
-    },
-    id: offer.id,
-    images: offer.images,
-    isFavorite: offer.is_favorite,
-    isPremium: offer.is_premium,
-    location: {
-      latitude: offer.location.latitude,
-      longitude: offer.location.longitude,
-      zoom: offer.location.zoom,
-    },
-    maxAdults: offer.max_adults,
-    previewImage: offer.preview_image,
-    price: offer.price,
-    rating: offer.rating,
-    title: offer.title,
-    type: offer.type,
-  }));
-  return adaptedOffers;
-};
-
-const fetchOffersAction = (): ThunkActionResult =>
-  async (dispatch, _getState, api): Promise<void> => {
-    await api.get<OfferFromServer[]>(APIRoute.Offers)
-      .then((response) => dispatch(setOffers(adaptToClient(response.data))));
+export const fetchOffersAction = (): ThunkActionResult =>
+  async (dispatch, _getStore, api): Promise<void> => {
+    dispatch(loadOffersStart());
+    const { data } = await api.get<OfferResponse[]>(APIRoute.Offers);
+    const normalizedOffers = data.map((offer) => (
+      adaptOfferToClient(offer)
+    ));
+    dispatch(loadOffersComplete(normalizedOffers));
   };
 
-const checkAuthAction = (): ThunkActionResult =>
-  async (dispatch, _getState, api) => {
-    await api.get(APIRoute.Login)
-      .then(() => {
-        dispatch(requireAuthorization(AuthorizationStatus.Auth));
-      });
+export const fetchCurrentOfferAction = (offerId: string): ThunkActionResult =>
+  async (dispatch, _getStore, api): Promise<void> => {
+    dispatch(loadCurrentOfferStart());
+    try {
+      const { data } = await api.get<OfferResponse>(
+        `${APIRoute.Offers}/${offerId}`,
+      );
+      const normalizedOffer = adaptOfferToClient(data);
+      dispatch(loadCurrentOfferComplete(normalizedOffer));
+    } catch {
+      dispatch(loadCurrentOfferError());
+    }
   };
 
-const loginAction = ({login: email, password}: AuthData): ThunkActionResult =>
-  async (dispatch, _getState, api) => {
-    const {data: {token}} = await api.post<{token: Token}>(APIRoute.Login, {email, password});
-    saveToken(token);
-    dispatch(requireAuthorization(AuthorizationStatus.Auth));
+export const fetchNearbyOffersAction = (offerId: string): ThunkActionResult =>
+  async (dispatch, _getStore, api): Promise<void> => {
+    dispatch(loadNearbyOffersStart());
+    const { data } = await api.get<OfferResponse[]>(
+      `${APIRoute.Offers}/${offerId}/nearby`,
+    );
+    const normalizedNearbyOffers = data.map((offer) => (
+      adaptOfferToClient(offer)
+    ));
+    dispatch(loadNearbyOffersComplete(normalizedNearbyOffers));
   };
 
+export const fetchReviewsAction = (offerId: string): ThunkActionResult =>
+  async (dispatch, _getStore, api): Promise<void> => {
+    dispatch(loadReviewsStart());
+    const { data } = await api.get<ReviewResponse[]>(
+      `${APIRoute.Reviews}/${offerId}`,
+    );
+    const normalizedReviews = data.map((review) => (
+      adaptReviewToClient(review)
+    ));
+    dispatch(loadReviewsComplete(normalizedReviews));
+  };
 
-const logoutAction = (): ThunkActionResult =>
+export const checkAuthAction = (): ThunkActionResult =>
+  async (dispatch, _getStore, api) => {
+    const { data } = await api.get<UserResponse>(APIRoute.LogIn);
+    dispatch(logIn(adaptUserToClient(data)));
+  };
+
+export const logInAction = ({ login: email, password }: AuthData): ThunkActionResult =>
+  async (dispatch, _getStore, api) => {
+    const { data } = await api.post<UserResponse>(APIRoute.LogIn, { email, password });
+    saveToken(data.token);
+    dispatch(logIn(adaptUserToClient(data)));
+  };
+
+export const logOutAction = (): ThunkActionResult =>
   async (dispatch, _getState, api) => {
-    api.delete(APIRoute.Logout);
+    api.delete(APIRoute.LogOut);
     dropToken();
-    dispatch(requireLogout());
+    dispatch(logOut());
   };
-
-export {fetchOffersAction, checkAuthAction, loginAction, logoutAction};
