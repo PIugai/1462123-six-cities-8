@@ -1,12 +1,12 @@
 import { State } from '../types/state';
 import { Actions, ActionType } from '../types/action';
-import { CitiesNames, SortOption, AuthorizationStatus } from '../const';
+import { CitiesNames, SortOption, AuthStatus, ReviewPostStatus } from '../const';
 
 const initialState : State = {
   currentCity: CitiesNames.Paris,
   offers: [],
   currentSortOption: SortOption.Popular,
-  authorizationStatus: AuthorizationStatus.Unknown,
+  authStatus: AuthStatus.Unknown,
   reviews: [],
   sortOffersBy: SortOption.Popular,
   isCurrentOfferLoading: false,
@@ -17,6 +17,7 @@ const initialState : State = {
   user: null,
   currentOffer: null,
   nearbyOffers: [],
+  reviewPostStatus: ReviewPostStatus.Pristine,
 };
 
 const reducer = (state: State = initialState, action: Actions): State => {
@@ -69,13 +70,12 @@ const reducer = (state: State = initialState, action: Actions): State => {
       return {
         ...state,
         user: action.payload,
-        authorizationStatus: AuthorizationStatus.Auth,
+        authStatus: AuthStatus.Auth,
       };
-    case ActionType.LogOut:
+    case ActionType.SetReviewPostStatus:
       return {
         ...state,
-        user: null,
-        authorizationStatus: AuthorizationStatus.NoAuth,
+        reviewPostStatus: action.payload,
       };
     default:
       return state;

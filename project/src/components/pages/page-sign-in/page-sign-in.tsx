@@ -2,22 +2,27 @@ import { Redirect } from 'react-router';
 import { ThunkAppDispatch } from '../../../types/action';
 import { AuthData } from '../../../types/auth-data';
 import { connect, ConnectedProps } from 'react-redux';
-import { AppRoute, AuthorizationStatus } from '../../../const';
+import { AppRoute, AuthStatus } from '../../../const';
 import { FormEvent, useRef } from 'react';
 import { logInAction } from '../../../store/api-actions';
 import Header from '../../header/header';
 import { State } from '../../../types/state';
 
-const validatePassword = (inputValue: string) => {
-  if (inputValue.includes(' ')) {
-    return 'Password must not include spaces';
+const validatePassword = (password: string) => {
+  const passwordReg = /[a-z][0-9]/;
+
+  if (password.includes(' ')) {
+    return 'Password must not contain a space';
+  }
+  if (!passwordReg.test(password)) {
+    return 'Password must contain at least one letter and number';
   }
   return '';
 };
 
-const mapStateToProps = ({ user, authorizationStatus }: State) => ({
+const mapStateToProps = ({ user, authStatus }: State) => ({
   user,
-  authorizationStatus,
+  authStatus,
 });
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
@@ -30,7 +35,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Element {
+function PageSignIn({ authStatus, onSubmit }: PropsFromRedux): JSX.Element {
 
   const loginRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -52,7 +57,7 @@ function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Elem
     }
   };
 
-  if (authorizationStatus === AuthorizationStatus.Auth) {
+  if (authStatus === AuthStatus.Auth) {
     return <Redirect to={AppRoute.Main}/>;
   }
 
@@ -69,8 +74,6 @@ function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Elem
               onSubmit={handleSubmit}
               onChange={handleFieldsChange}
               className="login__form form"
-              action=""
-              method="post"
             >
               <div className="login__input-wrapper form__input-wrapper">
                 <label className="visually-hidden">E-mail</label>

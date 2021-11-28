@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { useParams } from 'react-router';
 import { State } from '../../../types/state';
 import { ThunkAppDispatch } from '../../../types/action';
+import { AuthStatus } from '../../../const';
 import {
   fetchReviewsAction,
   fetchCurrentOfferAction,
@@ -17,9 +18,10 @@ import Page404 from '../page-404/page-404';
 import ReviewsList from '../../reviews-list/reviews-list';
 import ReviewForm from '../../reviews-form/reviews-form';
 
-const MAX_AMOUNT_IMAGES = 6;
+const MAX_AMOUNT_IMAGES = 10;
 
 const mapStateToProps = ({
+  authStatus,
   currentOffer,
   reviews,
   nearbyOffers,
@@ -28,6 +30,7 @@ const mapStateToProps = ({
   isCurrentOfferLoadingError,
   isNearbyOffersLoading,
 }: State) => ({
+  authStatus,
   currentOffer,
   reviews,
   nearbyOffers,
@@ -46,8 +49,9 @@ const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function OfferPage(props: PropsFromRedux): JSX.Element {
+function PageRoom(props: PropsFromRedux): JSX.Element {
   const {
+    authStatus,
     currentOffer,
     reviews,
     nearbyOffers,
@@ -194,7 +198,9 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
                 {isReviewsLoading ? <Loader /> : (
                   <section className="property__reviews reviews">
                     <ReviewsList reviews={reviews} />
-                    <ReviewForm />
+                    {authStatus === AuthStatus.Auth && (
+                      <ReviewForm offerId={offerId} />
+                    )}
                   </section>
                 )}
               </div>
@@ -202,7 +208,6 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
             {isNearbyOffersLoading ? <Loader /> : (
               <section className="property__map map">
                 <OffersMap
-                  zoomOnOffer={false}
                   offers={offers}
                   activeOffer={currentOffer}
                 />
@@ -234,7 +239,7 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
   );
 }
 
-export { OfferPage };
+export { PageRoom };
 
-export default connector(OfferPage);
+export default connector(PageRoom);
 

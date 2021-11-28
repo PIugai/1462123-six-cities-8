@@ -10,12 +10,13 @@ import {
   loadNearbyOffersComplete,
   loadNearbyOffersStart,
   logIn,
-  logOut
+  logOut,
+  setReviewPostStatus
 } from '../store/action';
 import { saveToken, dropToken } from '../services/token';
-import { APIRoute } from '../const';
+import { APIRoute, ReviewPostStatus } from '../const';
 import { OfferResponse } from '../types/offer';
-import { ReviewResponse } from '../types/review';
+import { ReviewResponse, NewReview } from '../types/review';
 import { AuthData } from '../types/auth-data';
 import { adaptOfferToClient, adaptReviewToClient, adaptUserToClient } from '../utils';
 import { UserResponse } from '../types/user';
@@ -66,6 +67,26 @@ export const fetchReviewsAction = (offerId: string): ThunkActionResult =>
       adaptReviewToClient(review)
     ));
     dispatch(loadReviewsComplete(normalizedReviews));
+  };
+
+export const postReviewAction = ({ comment, rating } : NewReview, offerId: string): ThunkActionResult =>
+  async (dispatch, _getStore, api) => {
+    dispatch(setReviewPostStatus(ReviewPostStatus.Posting));
+
+    try {
+      const { data } = await api.post<ReviewResponse[]>(
+        `${APIRoute.Reviews}/${offerId}`,
+        { comment, rating },
+      );
+      const normalizedReviews = data.map((review) => (
+        adaptReviewToClient(review)
+      ));
+      dispatch(loadReviewsComplete(normalizedReviews));
+      dispatch(setReviewPostStatus(ReviewPostStatus.Posted));
+    }
+    catch {
+      dispatch(setReviewPostStatus(ReviewPostStatus.NotPosted));
+    }
   };
 
 export const checkAuthAction = (): ThunkActionResult =>

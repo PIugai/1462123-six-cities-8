@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Offer } from '../../types/offer';
 import  SortOffers  from '../sort-offers/sort-offers';
 import OfferCard from '../place-card/place-card';
-import Map from '../offers-map/offers-map';
+import OffersMap from '../offers-map/offers-map';
 import NoOffers from '../no-offers/no-offers';
 
 type OffersListProps = {
@@ -51,7 +51,7 @@ function PlacesList({currentCity, offers, hasNoOffers}: OffersListProps): JSX.El
             </section>
             <div className="cities__right-section">
               <section className="cities__map map">
-                <Map offers={offers} activeOffer={hoveredOffer} />
+                <OffersMap offers={offers} activeOffer={hoveredOffer} />
               </section>
             </div>
           </>

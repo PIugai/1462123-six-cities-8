@@ -5,7 +5,7 @@ enum AppRoute {
   Room = '/offer',
 }
 
-enum AuthorizationStatus {
+enum AuthStatus {
   Auth = 'AUTH',
   NoAuth = 'NO_AUTH',
   Unknown = 'UNKNOWN',
@@ -34,4 +34,11 @@ enum SortOption {
   TopRatedFirst = 'Top rated first',
 }
 
-export {AppRoute, AuthorizationStatus, CitiesNames, SortOption, APIRoute};
+enum ReviewPostStatus {
+  Pristine = 'PRISTINE',
+  Posting = 'POSTING',
+  Posted = 'POSTED',
+  NotPosted = 'NOT_POSTED',
+}
+
+export {AppRoute, AuthStatus, CitiesNames, SortOption, APIRoute, ReviewPostStatus};

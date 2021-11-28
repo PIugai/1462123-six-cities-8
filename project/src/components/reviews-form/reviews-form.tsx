@@ -1,4 +1,10 @@
-import { ChangeEvent, Fragment, useState } from 'react';
+import { ChangeEvent, FormEvent, Fragment, useEffect, useState} from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { postReviewAction } from '../../store/api-actions';
+import { State } from '../../types/state';
+import { ThunkAppDispatch } from '../../types/action';
+import { NewReview } from '../../types/review';
+import { ReviewPostStatus } from '../../const';
 
 const MIN_COMMENT_LENGTH = 50;
 const Ratings = [
@@ -24,7 +30,28 @@ const Ratings = [
   },
 ] as const;
 
-function ReviewForm(): JSX.Element {
+type ReviewFormProps = {
+  offerId: string,
+}
+
+const mapStateToProps = ({ reviewPostStatus }: State) => ({
+  isReviewPosting: reviewPostStatus === ReviewPostStatus.Posting,
+  isReviewPosted: reviewPostStatus === ReviewPostStatus.Posted,
+  isReviewNotPosted: reviewPostStatus === ReviewPostStatus.NotPosted,
+});
+
+const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
+  postReview(review: NewReview, offerId: string) {
+    dispatch(postReviewAction(review, offerId));
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type ConnectedComponentProps = PropsFromRedux & ReviewFormProps;
+
+function ReviewForm(props: ConnectedComponentProps): JSX.Element {
+  const { postReview, isReviewPosting, isReviewPosted, isReviewNotPosted, offerId } = props;
   const [rating, setRating] = useState('');
   const [comment, setСomment] = useState('');
 
@@ -38,8 +65,22 @@ function ReviewForm(): JSX.Element {
     setСomment(evt.target.value);
   };
 
+  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    postReview({comment, rating: Number(rating)}, offerId);
+  };
+
+  useEffect(() => {
+    if (isReviewPosted) {
+      setRating('');
+      setСomment('');
+    }
+  }, [isReviewPosted]);
+
   return (
-    <form className="reviews__form form" action="#" method="post">
+    <form onSubmit={handleSubmit}
+      className="reviews__form form"
+    >
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating">
         {Ratings.map(({ title, value }) => (
@@ -52,6 +93,7 @@ function ReviewForm(): JSX.Element {
               id={`${value}-stars`}
               type="radio"
               onChange={handleRatingChange}
+              disabled={isReviewPosting}
             />
             <label
               htmlFor={`${value}-stars`}
@@ -73,6 +115,7 @@ function ReviewForm(): JSX.Element {
         placeholder="Tell how was your stay, what you like and what can be improved"
         onChange={handleCommentChange}
         maxLength={300}
+        disabled={isReviewPosting}
       />
       <div className="reviews__button-wrapper">
         <p className="reviews__help">
@@ -86,8 +129,15 @@ function ReviewForm(): JSX.Element {
           Submit
         </button>
       </div>
+      {isReviewNotPosted && (
+        <p className="reviews__help" style={{color: 'red'}}>
+          Error occured while posting review
+        </p>
+      )}
     </form>
   );
 }
 
-export default ReviewForm;
+export { ReviewForm };
+
+export default connector(ReviewForm);
