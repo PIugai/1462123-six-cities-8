@@ -18,6 +18,11 @@ type ReviewResponse = Omit<Review, 'user'> & {
     'name': string,
     'avatar_url': string,
   }
-}
+};
 
-export type { Review, ReviewResponse };
+type NewReview = {
+  comment: string,
+  rating: number,
+};
+
+export type { Review, ReviewResponse, NewReview };

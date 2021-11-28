@@ -23,12 +23,11 @@ const activePinIcon = leaflet.icon({
 
 type OffersMapProps = {
   activeOffer?: Offer | null,
-  zoomOnOffer?: boolean,
   offers: Offer[],
 };
 
 export default function OffersMap (props: OffersMapProps): JSX.Element {
-  const { zoomOnOffer = true, activeOffer, offers } = props;
+  const { activeOffer, offers } = props;
 
   const mapRef = useRef(null);
 
@@ -81,11 +80,11 @@ export default function OffersMap (props: OffersMapProps): JSX.Element {
       pin.setIcon(isActive ? activePinIcon : defaultPinIcon)
         .addTo(pinsGroupRef.current);
 
-      isActive && zoomOnOffer && mapInstance.flyTo([offer.location.latitude, offer.location.longitude], offer.location.zoom);
+      isActive && mapInstance.flyTo([offer.location.latitude, offer.location.longitude]);
 
       pinsGroupRef.current.addTo(mapInstance);
     });
-  }, [zoomOnOffer, activeOffer, city, mapInstance, offers]);
+  }, [activeOffer, city, mapInstance, offers]);
 
   useEffect(createMap, [createMap]);
 

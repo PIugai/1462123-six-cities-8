@@ -1,10 +1,11 @@
+import { CitiesNames } from './const';
 import { Offer, OfferResponse } from './types/offer';
 import { Review, ReviewResponse } from './types/review';
 import { User, UserResponse } from './types/user';
 
 const ONE_STAR_RATING_PERCENT = 20;
 
-const getRatingInStars = (rating: number): string => `${ONE_STAR_RATING_PERCENT*rating}%`;
+const getRatingInStars = (rating: number): string => `${Math.round(rating) * ONE_STAR_RATING_PERCENT}%`;
 
 const adaptOfferToClient = (offerData: OfferResponse): Offer => ({
   bedrooms: offerData.bedrooms,
@@ -62,4 +63,10 @@ const adaptUserToClient = (userData: UserResponse): User => ({
   name: userData.name,
   token: userData.token,
 });
-export { getRatingInStars, adaptOfferToClient, adaptReviewToClient, adaptUserToClient};
+
+const getRandomCity = (arr: CitiesNames[]): CitiesNames => {
+  const rand = Math.floor(Math.random() * arr.length);
+  return arr[rand];
+};
+
+export { getRatingInStars, adaptOfferToClient, adaptReviewToClient, adaptUserToClient, getRandomCity};

@@ -1,16 +1,32 @@
 import { useEffect, useMemo } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
-import { State } from '../../../types/state';
-import { ThunkAppDispatch } from '../../../types/action';
+import { AuthStatus } from '../../../const';
+import { getRatingInStars } from '../../../utils';
 import {
   fetchReviewsAction,
   fetchCurrentOfferAction,
-  fetchNearbyOffersAction
+  fetchNearbyOffersAction,
+  changeFavoriteStatusAction
 } from '../../../store/api-actions';
-import { getRatingInStars } from '../../../utils';
+import { getAuthStatus } from '../../../store/auth-store/selectors';
+import { updateCurrentOffer } from '../../../store/offer-store/actions';
+import {
+  getCurrentOffer,
+  getIsCurrentOfferLoading,
+  getIsCurrentOfferLoadingError
+} from '../../../store/offer-store/selectors';
+import {
+  getIsReviewsLoading,
+  getReviews
+} from '../../../store/reviews-store/selectors';
+import { updateNearbyOffers } from '../../../store/nearby-offers-store/actions';
+import {
+  getIsNearbyOffersLoading,
+  getNearbyOffers
+} from '../../../store/nearby-offers-store/selectors';
 import Header from '../../header/header';
-import OfferCard from '../../place-card/place-card';
+import OfferCard from '../../offer-card/offer-card';
 import OffersMap from '../../offers-map/offers-map';
 import Loader from '../../loader/loader';
 import Page404 from '../page-404/page-404';
@@ -19,59 +35,49 @@ import ReviewForm from '../../reviews-form/reviews-form';
 
 const MAX_AMOUNT_IMAGES = 6;
 
-const mapStateToProps = ({
-  currentOffer,
-  reviews,
-  nearbyOffers,
-  isReviewsLoading,
-  isCurrentOfferLoading,
-  isCurrentOfferLoadingError,
-  isNearbyOffersLoading,
-}: State) => ({
-  currentOffer,
-  reviews,
-  nearbyOffers,
-  isReviewsLoading,
-  isCurrentOfferLoading,
-  isCurrentOfferLoadingError,
-  isNearbyOffersLoading,
-});
+function PageRoom(): JSX.Element {
+  const authStatus = useSelector(getAuthStatus);
 
-const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  fetchCurrentOffer: (offerId: string) => dispatch(fetchCurrentOfferAction(offerId)),
-  fetchReviews: (offerId: string) => dispatch(fetchReviewsAction(offerId)),
-  fetchNearbyOffer: (offerId: string) => dispatch(fetchNearbyOffersAction(offerId)),
-});
+  const currentOffer = useSelector(getCurrentOffer);
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
+  const reviews = useSelector(getReviews);
 
-function OfferPage(props: PropsFromRedux): JSX.Element {
-  const {
-    currentOffer,
-    reviews,
-    nearbyOffers,
-    fetchReviews,
-    fetchCurrentOffer,
-    fetchNearbyOffer,
-    isReviewsLoading,
-    isCurrentOfferLoading,
-    isCurrentOfferLoadingError,
-    isNearbyOffersLoading,
-  } = props;
+  const nearbyOffers = useSelector(getNearbyOffers);
+
+  const isReviewsLoading = useSelector(getIsReviewsLoading);
+
+  const isCurrentOfferLoading = useSelector(getIsCurrentOfferLoading);
+
+  const isCurrentOfferLoadingError = useSelector(getIsCurrentOfferLoadingError);
+
+  const isNearbyOffersLoading = useSelector(getIsNearbyOffersLoading);
+
+  const dispatch = useDispatch();
 
   const { offerId } = useParams<{ offerId: string }>();
 
-  useEffect(() => {
-    fetchReviews(offerId);
-    fetchCurrentOffer(offerId);
-    fetchNearbyOffer(offerId);
-  },[
-    fetchCurrentOffer,
-    fetchNearbyOffer,
-    fetchReviews,
-    offerId,
-  ]);
+
+  const handleOfferFavoriteClick = () => {
+    if (currentOffer) {
+      dispatch(changeFavoriteStatusAction(
+        currentOffer.id,
+        currentOffer.isFavorite,
+        (updatedOffer) => {
+          dispatch(updateCurrentOffer(updatedOffer));
+        },
+      ));
+    }
+  };
+
+  const handleNearbyFavoriteClick = (currentOfferId: number, isFavorite: boolean) => {
+    dispatch(changeFavoriteStatusAction(
+      currentOfferId,
+      isFavorite,
+      (updatedOffer) => {
+        dispatch(updateNearbyOffers(updatedOffer));
+      },
+    ));
+  };
 
   const offers = useMemo(() => {
     if (!currentOffer) {
@@ -79,6 +85,13 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
     }
     return [...nearbyOffers, currentOffer];
   }, [currentOffer, nearbyOffers]);
+
+
+  useEffect(() => {
+    dispatch(fetchCurrentOfferAction(offerId));
+    dispatch(fetchReviewsAction(offerId));
+    dispatch(fetchNearbyOffersAction(offerId));
+  },[dispatch, offerId]);
 
   const renderPageContent = () => {
     if (isCurrentOfferLoadingError) {
@@ -117,7 +130,12 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
                   <h1 className="property__name">
                     {currentOffer.title}
                   </h1>
-                  <button className="property__bookmark-button button" type="button">
+                  <button
+                    className={`property__bookmark-button button button
+                    ${currentOffer.isFavorite ? 'property__bookmark-button--active' :''}`}
+                    type="button"
+                    onClick={handleOfferFavoriteClick}
+                  >
                     <svg className="property__bookmark-icon" width="31" height="33">
                       <use xlinkHref="#icon-bookmark"></use>
                     </svg>
@@ -164,9 +182,8 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
                 <div className="property__host">
                   <h2 className="property__host-title">Meet the host</h2>
                   <div className="property__host-user user">
-                    <div className={currentOffer.host.isPro ?
-                      'property__avatar-wrapper property__avatar-wrapper--pro user__avatar-wrapper' :
-                      'property__avatar-wrapper user__avatar-wrapper'}
+                    <div className={`property__avatar-wrapper user__avatar-wrapper
+                      ${currentOffer.host.isPro ? 'property__avatar-wrapper--pro' : ''}`}
                     >
                       <img
                         className="property__avatar user__avatar"
@@ -194,7 +211,9 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
                 {isReviewsLoading ? <Loader /> : (
                   <section className="property__reviews reviews">
                     <ReviewsList reviews={reviews} />
-                    <ReviewForm />
+                    {authStatus === AuthStatus.Auth && (
+                      <ReviewForm offerId={offerId} />
+                    )}
                   </section>
                 )}
               </div>
@@ -202,7 +221,6 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
             {isNearbyOffersLoading ? <Loader /> : (
               <section className="property__map map">
                 <OffersMap
-                  zoomOnOffer={false}
                   offers={offers}
                   activeOffer={currentOffer}
                 />
@@ -215,7 +233,11 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
                 <h2 className="near-places__title">Other places in the neighbourhood</h2>
                 <div className="near-places__list places__list">
                   {nearbyOffers.map((nearbyOffer) => (
-                    <OfferCard.Offer key={nearbyOffer.id} offer={nearbyOffer} />
+                    <OfferCard.Offer
+                      onFavoriteClick={handleNearbyFavoriteClick}
+                      key={nearbyOffer.id}
+                      offer={nearbyOffer}
+                    />
                   ))}
                 </div>
               </section>
@@ -234,7 +256,6 @@ function OfferPage(props: PropsFromRedux): JSX.Element {
   );
 }
 
-export { OfferPage };
+export default PageRoom;
 
-export default connector(OfferPage);
 

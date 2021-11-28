@@ -1,33 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
-import { State } from '../../types/state';
-import { Actions } from '../../types/action';
+import { useSelector, useDispatch } from 'react-redux';
 import { SortOption } from '../../const';
-import { setSortOffersBy } from '../../store/action';
+import { setSortOffersBy } from '../../store/app-store/actions';
+import { getSortOffersBy } from '../../store/app-store/selectors';
 
-const mapStateToProps = ({ sortOffersBy }: State) => (
-  { sortOffersBy }
-);
+function SortOffers(): JSX.Element {
+  const sortOffersBy = useSelector(getSortOffersBy);
 
-const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
-  onSortChange: (sortOption: SortOption) => {
-    dispatch(setSortOffersBy(sortOption));
-  },
-});
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-function SortOffers(props: PropsFromRedux): JSX.Element {
-  const { sortOffersBy, onSortChange } = props;
+  const dispatch = useDispatch();
 
   const [isSortMenuActive, setIsSortMenuActive] = useState(false);
 
   const sortRef = useRef<HTMLFormElement | null>(null);
 
-  const toogleSortMenu = () => setIsSortMenuActive((prev) => !prev);
+  const toogleSortMenuHandle = () => setIsSortMenuActive((prev) => !prev);
 
   useEffect(() => {
     const handleOutsideClick = (evt: MouseEvent) => {
@@ -53,7 +39,7 @@ function SortOffers(props: PropsFromRedux): JSX.Element {
     >
       <span className="places__sorting-caption">Sort by</span>
       <span
-        onClick={toogleSortMenu}
+        onClick={toogleSortMenuHandle}
         className="places__sorting-type"
         tabIndex={0}
       >
@@ -80,8 +66,8 @@ function SortOffers(props: PropsFromRedux): JSX.Element {
               'places__option--active' : ''}`}
               tabIndex={0}
               onClick={() => {
-                onSortChange(option);
-                toogleSortMenu();
+                dispatch(setSortOffersBy(option));
+                toogleSortMenuHandle();
               }}
             >
               {option}
@@ -93,6 +79,4 @@ function SortOffers(props: PropsFromRedux): JSX.Element {
   );
 }
 
-export { SortOffers };
-
-export default connector(SortOffers);
+export default SortOffers;

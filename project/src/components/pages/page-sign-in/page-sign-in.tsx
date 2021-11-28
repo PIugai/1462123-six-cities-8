@@ -1,58 +1,75 @@
+import { FormEvent, useMemo, useRef } from 'react';
 import { Redirect } from 'react-router';
-import { ThunkAppDispatch } from '../../../types/action';
-import { AuthData } from '../../../types/auth-data';
-import { connect, ConnectedProps } from 'react-redux';
-import { AppRoute, AuthorizationStatus } from '../../../const';
-import { FormEvent, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppRoute, AuthStatus, CitiesNames } from '../../../const';
+import { getRandomCity } from '../../../utils';
+import { getAuthStatus } from '../../../store/auth-store/selectors';
 import { logInAction } from '../../../store/api-actions';
 import Header from '../../header/header';
-import { State } from '../../../types/state';
+import { changeCurrentCity } from '../../../store/app-store/actions';
 
-const validatePassword = (inputValue: string) => {
-  if (inputValue.includes(' ')) {
-    return 'Password must not include spaces';
+const citiesList = Object.values(CitiesNames);
+
+const validateEmail = (email: string) => {
+  const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!emailReg.test(email)) {
+    return 'Enter a valid email';
   }
   return '';
 };
 
-const mapStateToProps = ({ user, authorizationStatus }: State) => ({
-  user,
-  authorizationStatus,
-});
+const validatePassword = (password: string) => {
+  const passwordReg = /(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]+/;
 
-const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  onSubmit(authData: AuthData) {
-    dispatch(logInAction(authData));
-  },
-});
+  if (password.includes(' ')) {
+    return 'Password must not contain a space';
+  }
+  if (!passwordReg.test(password)) {
+    return 'Password must contain at least one letter and number';
+  }
+  return '';
+};
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
+function PageSignIn(): JSX.Element {
 
-type PropsFromRedux = ConnectedProps<typeof connector>;
+  const authStatus = useSelector(getAuthStatus);
 
-function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Element {
+  const dispatch = useDispatch();
 
   const loginRef = useRef<HTMLInputElement | null>(null);
+
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
   const handleFieldsChange = (evt: FormEvent<HTMLFormElement>) => {
-    if (loginRef.current && passwordRef.current) {
+    if (evt.target === loginRef.current) {
+      loginRef.current.setCustomValidity(validateEmail(loginRef.current.value));
+      loginRef.current.reportValidity();
+    }
+    if (evt.target === passwordRef.current) {
       passwordRef.current.setCustomValidity(validatePassword(passwordRef.current.value));
       passwordRef.current.reportValidity();
     }
   };
 
+  const randomCity = useMemo(() =>
+    getRandomCity(citiesList), []);
+
+  const handleCityLinkClick = (city: CitiesNames) => {
+    dispatch(changeCurrentCity(city));
+  };
+
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     if (loginRef.current && passwordRef.current) {
-      onSubmit({
+      dispatch(logInAction({
         login: loginRef.current.value,
         password: passwordRef.current.value,
-      });
+      }));
     }
   };
 
-  if (authorizationStatus === AuthorizationStatus.Auth) {
+  if (authStatus === AuthStatus.Auth) {
     return <Redirect to={AppRoute.Main}/>;
   }
 
@@ -69,8 +86,6 @@ function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Elem
               onSubmit={handleSubmit}
               onChange={handleFieldsChange}
               className="login__form form"
-              action=""
-              method="post"
             >
               <div className="login__input-wrapper form__input-wrapper">
                 <label className="visually-hidden">E-mail</label>
@@ -106,9 +121,15 @@ function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Elem
           </section>
           <section className="locations locations--login locations--current">
             <div className="locations__item">
-              <a className="locations__item-link" href="login.html">
-                <span>Amsterdam</span>
-              </a>
+              <Link
+                onClick={() => {
+                  handleCityLinkClick(randomCity as CitiesNames);
+                }}
+                className="locations__item-link"
+                to={AppRoute.Main}
+              >
+                <span>{randomCity}</span>
+              </Link>
             </div>
           </section>
         </div>
@@ -118,5 +139,4 @@ function PageSignIn({ authorizationStatus, onSubmit }: PropsFromRedux): JSX.Elem
   );
 }
 
-export default connector(PageSignIn);
-export { PageSignIn };
+export default PageSignIn;

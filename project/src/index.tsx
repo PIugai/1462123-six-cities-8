@@ -1,23 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/app/app';
-import { createStore, applyMiddleware } from 'redux';
+import {ToastContainer} from 'react-toastify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { applyMiddleware, createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { reducer } from './store/reducer';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { createAPI } from './services/api';
-import { logOut } from './store/action';
 import thunk from 'redux-thunk';
 import { ThunkAppDispatch } from './types/action';
-import { fetchOffersAction, checkAuthAction } from './store/api-actions';
+import { AppRoute } from './const';
+import { checkAuthAction, fetchOffersAction } from './store/api-actions';
+import { redirectToRoute } from './store/app-store/actions';
+import { logOut } from './store/auth-store/actions';
+import { rootReducer } from './store/root-reducer';
+import { redirect } from './store/middlewares/redirect';
+import { createAPI } from './services/api';
+import App from './app/app';
 
-const api = createAPI(
-  () => store.dispatch(logOut()),
+
+const ERROR_MESSAGE = 'Ooops, no response from server!';
+
+const api = createAPI({
+  onAuthError: () => {
+    store.dispatch(logOut());
+    store.dispatch(redirectToRoute(AppRoute.SignIn));
+  },
+  onServerError: () => toast.error(ERROR_MESSAGE),
+});
+
+export const store = createStore(
+  rootReducer,
+  composeWithDevTools(
+    applyMiddleware(thunk.withExtraArgument(api)),
+    applyMiddleware(redirect),
+  ),
 );
-
-const store = createStore(reducer, composeWithDevTools(
-  applyMiddleware(thunk.withExtraArgument(api)),
-));
 
 (store.dispatch as ThunkAppDispatch)(checkAuthAction());
 (store.dispatch as ThunkAppDispatch)(fetchOffersAction());
@@ -25,7 +42,9 @@ const store = createStore(reducer, composeWithDevTools(
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
+      <ToastContainer />
       <App />
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root'));
+  document.getElementById('root'),
+);

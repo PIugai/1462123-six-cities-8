@@ -1,4 +1,14 @@
-import { ChangeEvent, Fragment, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  Fragment,
+  useEffect,
+  useState
+} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { ReviewPostStatus } from '../../const';
+import { postReviewAction } from '../../store/api-actions';
+import { getReviewPostStatus } from '../../store/reviews-store/selectors';
 
 const MIN_COMMENT_LENGTH = 50;
 const Ratings = [
@@ -24,7 +34,24 @@ const Ratings = [
   },
 ] as const;
 
-function ReviewForm(): JSX.Element {
+type ReviewFormProps = {
+  offerId: string,
+}
+
+function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
+  const reviewPostStatus = useSelector(getReviewPostStatus);
+
+  const [
+    isReviewPosting,
+    isReviewPosted,
+    isReviewNotPosted,
+  ] = [
+    reviewPostStatus === ReviewPostStatus.Posting,
+    reviewPostStatus === ReviewPostStatus.Posted,
+    reviewPostStatus === ReviewPostStatus.NotPosted,
+  ];
+
+  const dispatch = useDispatch();
   const [rating, setRating] = useState('');
   const [comment, setСomment] = useState('');
 
@@ -38,8 +65,22 @@ function ReviewForm(): JSX.Element {
     setСomment(evt.target.value);
   };
 
+  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    dispatch(postReviewAction({comment, rating: Number(rating)}, offerId));
+  };
+
+  useEffect(() => {
+    if (isReviewPosted) {
+      setRating('');
+      setСomment('');
+    }
+  }, [isReviewPosted]);
+
   return (
-    <form className="reviews__form form" action="#" method="post">
+    <form onSubmit={handleSubmit}
+      className="reviews__form form"
+    >
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating">
         {Ratings.map(({ title, value }) => (
@@ -52,6 +93,7 @@ function ReviewForm(): JSX.Element {
               id={`${value}-stars`}
               type="radio"
               onChange={handleRatingChange}
+              disabled={isReviewPosting}
             />
             <label
               htmlFor={`${value}-stars`}
@@ -73,6 +115,7 @@ function ReviewForm(): JSX.Element {
         placeholder="Tell how was your stay, what you like and what can be improved"
         onChange={handleCommentChange}
         maxLength={300}
+        disabled={isReviewPosting}
       />
       <div className="reviews__button-wrapper">
         <p className="reviews__help">
@@ -86,6 +129,11 @@ function ReviewForm(): JSX.Element {
           Submit
         </button>
       </div>
+      {isReviewNotPosted && (
+        <p className="reviews__help" style={{color: 'red'}}>
+          Error occured while posting review
+        </p>
+      )}
     </form>
   );
 }

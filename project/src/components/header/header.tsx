@@ -1,40 +1,27 @@
 import { Link } from 'react-router-dom';
-import { connect, ConnectedProps } from 'react-redux';
-import { ThunkAppDispatch } from '../../types/action';
-import { State } from '../../types/state';
-import { AppRoute, AuthorizationStatus } from '../../const';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAuthStatus, getUser } from '../../store/auth-store/selectors';
+import { AppRoute, AuthStatus } from '../../const';
 import { logOutAction } from '../../store/api-actions';
 import Logo from '../logo/logo';
 
 type HeaderProps = {
-  isMainPage?: boolean,
+  isPageMain?: boolean,
   showUserBlock?: boolean,
 }
 
-const mapStateToProps = ({ authorizationStatus, user }: State) => ({
-  authorizationStatus,
-  user,
-});
+function Header({ isPageMain = false, showUserBlock = true }: HeaderProps): JSX.Element {
+  const authStatus = useSelector(getAuthStatus);
 
-const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  onLogOutClick() {
-    dispatch(logOutAction());
-  },
-});
+  const user = useSelector(getUser);
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
+  const dispatch = useDispatch();
 
-type PropsFromRedux = ConnectedProps<typeof connector>;
-type ConnectedComponentProps = PropsFromRedux & HeaderProps;
-
-function Header(props: ConnectedComponentProps): JSX.Element {
-  const { authorizationStatus, user, onLogOutClick, isMainPage = false, showUserBlock = true } = props;
-
-  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
+  const isAuthorized = authStatus === AuthStatus.Auth;
 
   const handleLogOutClick = (evt: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     evt.preventDefault();
-    onLogOutClick();
+    dispatch(logOutAction());
   };
 
   return (
@@ -46,7 +33,7 @@ function Header(props: ConnectedComponentProps): JSX.Element {
               width="81"
               height="41"
               className={'header__logo'}
-              isActive={isMainPage}
+              isActive={isPageMain}
             />
           </div>
           {showUserBlock &&
@@ -99,6 +86,4 @@ function Header(props: ConnectedComponentProps): JSX.Element {
   );
 }
 
-export { Header };
-
-export default connector(Header);
+export default Header;
