@@ -7,7 +7,7 @@ import { logOutAction } from '../../store/api-actions';
 import Logo from '../logo/logo';
 
 type HeaderProps = {
-  isMainPage?: boolean,
+  isPageMain?: boolean,
   showUserBlock?: boolean,
 }
 
@@ -28,7 +28,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type ConnectedComponentProps = PropsFromRedux & HeaderProps;
 
 function Header(props: ConnectedComponentProps): JSX.Element {
-  const { authStatus, user, onLogOutClick, isMainPage = false, showUserBlock = true } = props;
+  const { authStatus, user, onLogOutClick, isPageMain = false, showUserBlock = true } = props;
 
   const isAuthorized = authStatus === AuthStatus.Auth;
 
@@ -46,7 +46,7 @@ function Header(props: ConnectedComponentProps): JSX.Element {
               width="81"
               height="41"
               className={'header__logo'}
-              isActive={isMainPage}
+              isActive={isPageMain}
             />
           </div>
           {showUserBlock &&

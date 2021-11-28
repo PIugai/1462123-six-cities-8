@@ -27,7 +27,7 @@ function SortOffers(props: PropsFromRedux): JSX.Element {
 
   const sortRef = useRef<HTMLFormElement | null>(null);
 
-  const toogleSortMenu = () => setIsSortMenuActive((prev) => !prev);
+  const toogleSortMenuHandle = () => setIsSortMenuActive((prev) => !prev);
 
   useEffect(() => {
     const handleOutsideClick = (evt: MouseEvent) => {
@@ -53,7 +53,7 @@ function SortOffers(props: PropsFromRedux): JSX.Element {
     >
       <span className="places__sorting-caption">Sort by</span>
       <span
-        onClick={toogleSortMenu}
+        onClick={toogleSortMenuHandle}
         className="places__sorting-type"
         tabIndex={0}
       >
@@ -81,7 +81,7 @@ function SortOffers(props: PropsFromRedux): JSX.Element {
               tabIndex={0}
               onClick={() => {
                 onSortChange(option);
-                toogleSortMenu();
+                toogleSortMenuHandle();
               }}
             >
               {option}

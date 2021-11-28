@@ -31,7 +31,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function MainPage(props: PropsFromRedux): JSX.Element {
+function PageMain(props: PropsFromRedux): JSX.Element {
   const {
     currentCity,
     offers,
@@ -60,7 +60,7 @@ function MainPage(props: PropsFromRedux): JSX.Element {
 
   return (
     <div className="page page--gray page--main">
-      <Header isMainPage />
+      <Header isPageMain />
       <main
         className={`page__main page__main--index ${hasNoOffers ? 'page__main--index-empty' : ''}`}
       >
@@ -82,6 +82,6 @@ function MainPage(props: PropsFromRedux): JSX.Element {
   );
 }
 
-export { MainPage };
+export { PageMain };
 
-export default connector(MainPage);
+export default connector(PageMain);
