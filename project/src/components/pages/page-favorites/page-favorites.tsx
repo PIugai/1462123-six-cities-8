@@ -1,38 +1,81 @@
-import Footer from '../../footer/footer';
-import Header from '../../header/header';
-import OfferCard from '../../place-card/place-card';
+import { useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Offer } from '../../../types/offer';
+import { updateFavoriteOffers } from '../../../store/favorites-store/actions';
+import { getFavoritesOffers, getIsFavoritesOffersLoading } from '../../../store/favorites-store/selectors';
+import {
+  fetchFavoritesOffersAction,
+  changeFavoriteStatusAction
+} from '../../../store/api-actions';
+import Header from '../../header/header';
+import OfferCard from '../../offer-card/offer-card';
+import Footer from '../../footer/footer';
+import { AppRoute } from '../../../const';
+import { changeCurrentCity } from '../../../store/app-store/actions';
+import { CitiesNames } from '../../../const';
+import Loader from '../../loader/loader';
 
-type PageFavoritesProps = {
-  offers: Offer[];
-}
+type GrouppedOffers = Record<string, Offer[]>
 
-type GroupedOffers = Record<string, Offer[]>
+function FavoritesPage(): JSX.Element {
+  const dispatch = useDispatch();
 
-function PageFavorites({offers}: PageFavoritesProps):JSX.Element {
+  const favoritesOffers = useSelector(getFavoritesOffers);
+  const isFavoritesOffersLoading = useSelector(getIsFavoritesOffersLoading);
 
-  const favoriteOffers = offers.filter((offer) => offer.isFavorite);
+  const groupedFavoriteOffers = useMemo(() => (
+    favoritesOffers.reduce<GrouppedOffers>(
+      (res, offer) => {
+        if (!offer.isFavorite) {
+          return res;
+        }
+        const { name } = offer.city;
 
-  const groupedFavoriteOffers = favoriteOffers.reduce<GroupedOffers>((res, offer) => {
-    const { name } = offer.city;
-    if (!Object.keys(res).includes(name)) {
-      res[name] = [];
-    }
-    res[name].push(offer);
-    return res;
-  }, {});
+        if (!Object.keys(res).includes(name)) {
+          res[name] = [];
+        }
+        res[name].push(offer);
+
+        return res;
+      }, {},
+    )
+  ), [favoritesOffers]);
+
+  const handleFavoriteClick = (
+    currentOfferId: number,
+    isFavorite: boolean,
+  ) => {
+    dispatch(changeFavoriteStatusAction(
+      currentOfferId,
+      isFavorite,
+      (updatedOffer) => {
+        dispatch(updateFavoriteOffers(updatedOffer));
+      },
+    ));
+  };
+
+  const handleCityLinkClick = (city: CitiesNames) => {
+    dispatch(changeCurrentCity(city));
+  };
+
+  useEffect(() => {
+    dispatch(fetchFavoritesOffersAction());
+  },[dispatch]);
 
   return (
     <div className="page">
       <Header />
-      {(favoriteOffers.length === 0) ? (
+      {(Object.keys(groupedFavoriteOffers).length === 0) ? (
         <main className="page__main page__main--favorites page__main--favorites-empty">
           <div className="page__favorites-container container">
             <section className="favorites favorites--empty">
               <h1 className="visually-hidden">Favorites (empty)</h1>
               <div className="favorites__status-wrapper">
                 <b className="favorites__status">Nothing yet saved.</b>
-                <p className="favorites__status-description">Save properties to narrow down search or plan your future trips.</p>
+                <p className="favorites__status-description">
+                  Save properties to narrow down search or plan your future trips.
+                </p>
               </div>
             </section>
           </div>
@@ -42,27 +85,38 @@ function PageFavorites({offers}: PageFavoritesProps):JSX.Element {
           <div className="page__favorites-container container">
             <section className="favorites">
               <h1 className="favorites__title">Saved listing</h1>
-              <ul className="favorites__list">
-                {Object.entries(groupedFavoriteOffers).map(([cityName, cityOffers]) => (
-                  <li className="favorites__locations-items" key={cityName}>
-                    <div className="favorites__locations locations locations--current">
-                      <div className="locations__item">
-                        <a className="locations__item-link" href="favorites.html">
-                          <span>{cityName}</span>
-                        </a>
+              {isFavoritesOffersLoading ? (
+                <Loader />
+              ) : (
+                <ul className="favorites__list">
+                  {Object.entries(groupedFavoriteOffers).map(([cityName, cityOffers]) => (
+                    <li className="favorites__locations-items" key={cityName}>
+                      <div className="favorites__locations locations locations--current">
+                        <div className="locations__item">
+                          <Link
+                            onClick={() => {
+                              handleCityLinkClick(cityName as CitiesNames);
+                            }}
+                            className="locations__item-link"
+                            to={AppRoute.Main}
+                          >
+                            <span>{cityName}</span>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                    <div className="favorites__places">
-                      {cityOffers.map((offer) => (
-                        <OfferCard.Favorite
-                          key={offer.id}
-                          offer={offer}
-                        />
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                      <div className="favorites__places">
+                        {cityOffers.map((offer) => (
+                          <OfferCard.Favorite
+                            key={offer.id}
+                            offer={offer}
+                            onFavoriteClick={handleFavoriteClick}
+                          />
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           </div>
         </main>
@@ -72,4 +126,4 @@ function PageFavorites({offers}: PageFavoritesProps):JSX.Element {
   );
 }
 
-export default PageFavorites;
+export default FavoritesPage;

@@ -4,7 +4,7 @@ import { User } from '../types/user';
 import { CitiesNames, SortOption, AppRoute, ReviewPostStatus } from '../const';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { AxiosInstance } from 'axios';
-import { State } from '../types/state';
+import { Store } from './store';
 
 export const enum ActionType {
   LogIn = 'user/logIn',
@@ -23,6 +23,12 @@ export const enum ActionType {
   RedirectToRoute = 'app/redirectToRoute',
   SetSortOffersBy = 'app/changeSortOption',
   SetReviewPostStatus = 'user/setReviewPostStatus',
+  LoadFavoritesOffersStart = 'data/loadFavoritesOffersStart',
+  LoadFavoritesOffersComplete = 'data/loadFavoritesOffersComplete',
+  UpdateOffers = 'data/updateOffers',
+  UpdateCurrentOffer = 'data/updateCurrentOffer',
+  UpdateNearbyOffers = 'data/updateNearbyOffers',
+  UpdateFavoriteOffers = 'data/updateFavoriteOffers',
 }
 
 export type ChangeCurrentCityAction = {
@@ -99,6 +105,35 @@ export type SetReviewPostStatusAction = {
   payload: ReviewPostStatus,
 }
 
+export type LoadFavoritesOffersStartAction = {
+  type: ActionType.LoadFavoritesOffersStart,
+}
+
+export type LoadFavoritesOffersCompleteAction = {
+  type: ActionType.LoadFavoritesOffersComplete,
+  payload: Offer[],
+}
+
+export type UpdateOffersAction = {
+  type: ActionType.UpdateOffers,
+  payload: Offer,
+}
+
+export type UpdateCurrentOfferAction = {
+  type: ActionType.UpdateCurrentOffer,
+  payload: Offer,
+}
+
+export type UpdateNearbyOffersAction = {
+  type: ActionType.UpdateNearbyOffers,
+  payload: Offer,
+}
+
+export type UpdateFavoriteOffersAction = {
+  type: ActionType.UpdateFavoriteOffers,
+  payload: Offer,
+}
+
 export type Actions =
   | LogInAction
   | ChangeCurrentCityAction
@@ -116,7 +151,13 @@ export type Actions =
   | RedirectToRouteAction
   | SetSortOffersByAction
   | SetReviewPostStatusAction
+  | LoadFavoritesOffersStartAction
+  | LoadFavoritesOffersCompleteAction
+  | UpdateOffersAction
+  | UpdateCurrentOfferAction
+  | UpdateNearbyOffersAction
+  | UpdateFavoriteOffersAction
 
-export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;
+export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, Store, AxiosInstance, Actions>;
 
-export type ThunkAppDispatch = ThunkDispatch<State, AxiosInstance, Actions>;
+export type ThunkAppDispatch = ThunkDispatch<Store, AxiosInstance, Actions>;

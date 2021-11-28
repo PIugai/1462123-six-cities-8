@@ -23,9 +23,10 @@ type OfferCardProps = {
   imageHeight?: string,
   onMouseEnter?: (offerData: Offer) => void,
   onMouseLeave?: () => void,
+  onFavoriteClick?: (offerId: number, isFavorite: boolean) => void,
 };
 
-type SpecificOfferCardProps = Pick<OfferCardProps, 'offer' | 'onMouseEnter' | 'onMouseLeave'>;
+type SpecificOfferCardProps = Pick<OfferCardProps, 'offer' | 'onMouseEnter' | 'onMouseLeave' | 'onFavoriteClick'>;
 
 function OfferCard(props: OfferCardProps): JSX.Element {
   const {
@@ -37,6 +38,7 @@ function OfferCard(props: OfferCardProps): JSX.Element {
     imageWidth = PreviewImgSize.default.width,
     onMouseEnter,
     onMouseLeave,
+    onFavoriteClick,
   } = props;
 
   const handleMouseEnter = () => {
@@ -45,6 +47,10 @@ function OfferCard(props: OfferCardProps): JSX.Element {
 
   const handleMouseLeave = () => {
     onMouseLeave && onMouseLeave();
+  };
+
+  const handleFavoriteClick = () => {
+    onFavoriteClick && onFavoriteClick(offer.id, offer.isFavorite);
   };
 
   return (
@@ -76,6 +82,7 @@ function OfferCard(props: OfferCardProps): JSX.Element {
             </span>
           </div>
           <button
+            onClick={handleFavoriteClick}
             className={`place-card__bookmark-button button
             ${offer.isFavorite ? 'place-card__bookmark-button--active' : ''}`}
             type="button"

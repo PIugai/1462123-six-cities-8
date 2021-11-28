@@ -1,3 +1,4 @@
+import { CitiesNames } from './const';
 import { Offer, OfferResponse } from './types/offer';
 import { Review, ReviewResponse } from './types/review';
 import { User, UserResponse } from './types/user';
@@ -62,4 +63,10 @@ const adaptUserToClient = (userData: UserResponse): User => ({
   name: userData.name,
   token: userData.token,
 });
-export { getRatingInStars, adaptOfferToClient, adaptReviewToClient, adaptUserToClient};
+
+const getRandomCity = (arr: CitiesNames[]): CitiesNames => {
+  const rand = Math.floor(Math.random() * arr.length);
+  return arr[rand];
+};
+
+export { getRatingInStars, adaptOfferToClient, adaptReviewToClient, adaptUserToClient, getRandomCity};

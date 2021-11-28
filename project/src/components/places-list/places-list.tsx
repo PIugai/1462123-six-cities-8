@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Offer } from '../../types/offer';
 import  SortOffers  from '../sort-offers/sort-offers';
-import OfferCard from '../place-card/place-card';
+import OfferCard from '../offer-card/offer-card';
 import OffersMap from '../offers-map/offers-map';
 import NoOffers from '../no-offers/no-offers';
+import { changeFavoriteStatusAction } from '../../store/api-actions';
 
 type OffersListProps = {
   currentCity: string,
@@ -12,6 +14,8 @@ type OffersListProps = {
 }
 
 function PlacesList({currentCity, offers, hasNoOffers}: OffersListProps): JSX.Element {
+
+  const dispatch = useDispatch();
 
   const [hoveredOffer, setHoveredOffer] = useState<Offer | null>(null);
 
@@ -22,6 +26,10 @@ function PlacesList({currentCity, offers, hasNoOffers}: OffersListProps): JSX.El
   const handleOfferMouseLeave = () => (
     setHoveredOffer(null)
   );
+
+  const handleFavoriteClick = (offerId: number, isFavorite: boolean) => {
+    dispatch(changeFavoriteStatusAction(offerId, isFavorite));
+  };
 
   return (
     <div className="cities">
@@ -45,6 +53,7 @@ function PlacesList({currentCity, offers, hasNoOffers}: OffersListProps): JSX.El
                     offer={offer}
                     onMouseEnter={handleOfferMouseEnter}
                     onMouseLeave={handleOfferMouseLeave}
+                    onFavoriteClick={handleFavoriteClick}
                   />
                 ))}
               </div>
