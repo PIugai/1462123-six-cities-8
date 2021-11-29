@@ -18,7 +18,7 @@ const middlewares = [thunk.withExtraArgument(api)];
 const mockStore = configureMockStore(middlewares);
 
 describe('Application Routing', () => {
-  it('should render "Main-Page" when user navigate to "/"', () => {
+  it('should render "Page-Main" when user navigate to "/"', () => {
     history.push(AppRoute.Main);
 
     render(
@@ -31,7 +31,7 @@ describe('Application Routing', () => {
     expect(screen.getByText(/Cities/i)).toBeInTheDocument();
   });
 
-  it('should render "Login-Page" when user navigate to "/login"', () => {
+  it('should render "Page-Sign-In" when user navigate to "/login"', () => {
     history.push(AppRoute.SignIn);
 
     render(
@@ -45,7 +45,7 @@ describe('Application Routing', () => {
     expect(screen.getByTestId('login-main')).toBeInTheDocument();
   });
 
-  it('should render "Favorites-Page" when user navigate to "/favorites"', () => {
+  it('should render "Page-Favorites" when user navigate to "/favorites"', () => {
     history.push(AppRoute.Favorites);
 
     render(
@@ -59,7 +59,7 @@ describe('Application Routing', () => {
     expect(screen.getByTestId('favorites-main')).toBeInTheDocument();
   });
 
-  it('should render "Offer-Page" when user navigate to "/offer/:id"', () => {
+  it('should render "Page-Room" when user navigate to "/offer/:id"', () => {
     history.push(`${AppRoute.Room}/1`);
 
     render(
@@ -76,7 +76,7 @@ describe('Application Routing', () => {
     expect(screen.getByText(/Other places in the neighbourhood/i)).toBeInTheDocument();
   });
 
-  it('should render "Not-Found-Page" when user navigate to non-existent route', () => {
+  it('should render "Page-404" when user navigate to non-existent route', () => {
     history.push('/non-existent-route');
 
     render(

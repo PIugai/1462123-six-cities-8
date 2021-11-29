@@ -11,7 +11,7 @@ const mockStore = configureMockStore();
 
 const history = createMemoryHistory();
 
-describe('Component: OffersList', () => {
+describe('Component: PlacesList', () => {
 
   it('should render correctly', () => {
     render(

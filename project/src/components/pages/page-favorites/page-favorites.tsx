@@ -16,7 +16,7 @@ import { changeCurrentCity } from '../../../store/app-store/actions';
 import { CitiesNames } from '../../../const';
 import Loader from '../../loader/loader';
 
-type GrouppedOffers = Record<string, Offer[]>
+type GroupedOffers = Record<string, Offer[]>
 
 function PageFavorites(): JSX.Element {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ function PageFavorites(): JSX.Element {
   const isFavoritesOffersLoading = useSelector(getIsFavoritesOffersLoading);
 
   const groupedFavoriteOffers = useMemo(() => (
-    favoritesOffers.reduce<GrouppedOffers>(
+    favoritesOffers.reduce<GroupedOffers>(
       (res, offer) => {
         if (!offer.isFavorite) {
           return res;

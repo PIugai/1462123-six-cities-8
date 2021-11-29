@@ -11,7 +11,7 @@ const history = createMemoryHistory();
 
 const mockStore = configureMockStore([thunk]);
 
-describe('Component: MainPage', () => {
+describe('Component: PageMain', () => {
 
   describe('has offers', () => {
 

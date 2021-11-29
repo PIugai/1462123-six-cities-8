@@ -7,13 +7,13 @@ import OffersMap from '../offers-map/offers-map';
 import NoOffers from '../no-offers/no-offers';
 import { changeFavoriteStatusAction } from '../../store/api-actions';
 
-type OffersListProps = {
+type PlacesListProps = {
   currentCity: string,
   offers: Offer[],
   hasNoOffers: boolean,
 }
 
-function PlacesList({currentCity, offers, hasNoOffers}: OffersListProps): JSX.Element {
+function PlacesList({currentCity, offers, hasNoOffers}: PlacesListProps): JSX.Element {
 
   const dispatch = useDispatch();
 

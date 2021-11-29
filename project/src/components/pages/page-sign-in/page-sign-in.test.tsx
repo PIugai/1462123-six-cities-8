@@ -11,7 +11,7 @@ const history = createMemoryHistory();
 
 const mockStore = configureMockStore();
 
-describe('Component: Login', () => {
+describe('Component: Page-Sign-In', () => {
 
   it('should render correctly', () => {
 

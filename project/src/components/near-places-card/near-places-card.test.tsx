@@ -7,9 +7,9 @@ import { fakeOffer, storeAuth } from '../../test-utils/mocks';
 
 import NearPlacesCard from './near-places-card';
 
-describe('Component: Card', () => {
+describe('Component: Near-Places-Card', () => {
 
-  it('should render with altText "Place" ant text "night" in OfferCard.Offer', () => {
+  it('should render with altText "Place" ant text "night" in NearPlacesCard', () => {
     const mockStore = configureMockStore();
     const history = createMemoryHistory();
 

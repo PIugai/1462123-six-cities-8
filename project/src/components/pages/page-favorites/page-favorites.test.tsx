@@ -10,7 +10,7 @@ import PageFavorites from './page-favorites';
 const history = createMemoryHistory();
 const mockStore = configureMockStore([thunk]);
 
-describe('Component: FavoritesPage', () => {
+describe('Component: PageFavorites', () => {
 
   it('should render all favorites places', () => {
 

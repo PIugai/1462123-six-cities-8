@@ -13,7 +13,7 @@ const history = createMemoryHistory();
 
 const mockStore = configureMockStore([thunk]);
 
-describe('Component: OfferPage AUTH', () => {
+describe('Component: PageRoom AUTH', () => {
 
   it('should render correctly AUTH', () => {
     render(
@@ -33,7 +33,7 @@ describe('Component: OfferPage AUTH', () => {
   });
 });
 
-describe('Component: OfferPage NOAUTH', () => {
+describe('Component: PageRoom NOAUTH', () => {
 
   it('should render correctly NOAUTH', () => {
     render(

@@ -10,7 +10,7 @@ const history = createMemoryHistory();
 
 const mockStore = configureMockStore();
 
-describe('Component: NotFoundPage', () => {
+describe('Component: Page404', () => {
 
   it('should render correctly', () => {
 
