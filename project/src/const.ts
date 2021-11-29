@@ -16,7 +16,7 @@ const enum APIRoute {
   LogIn = '/login',
   LogOut = '/logout',
   Reviews = '/comments',
-  FavoriresOffers = '/favorite',
+  FavoritesOffers = '/favorite',
 }
 
 enum CitiesNames {
