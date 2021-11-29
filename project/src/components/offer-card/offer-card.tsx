@@ -3,7 +3,7 @@ import { Offer } from '../../types/offer';
 import { AppRoute } from '../../const';
 import { getRatingInStars } from '../../utils';
 
-const PreviewImgSize = {
+export const PreviewImgSize = {
   default: {
     height: '200',
     width: '260',
@@ -14,7 +14,7 @@ const PreviewImgSize = {
   },
 };
 
-type OfferCardProps = {
+export type OfferCardProps = {
   offer: Offer,
   rootClassName: string,
   imageWrapperClassName: string,
@@ -25,8 +25,6 @@ type OfferCardProps = {
   onMouseLeave?: () => void,
   onFavoriteClick?: (offerId: number, isFavorite: boolean) => void,
 };
-
-type SpecificOfferCardProps = Pick<OfferCardProps, 'offer' | 'onMouseEnter' | 'onMouseLeave' | 'onFavoriteClick'>;
 
 function OfferCard(props: OfferCardProps): JSX.Element {
   const {
@@ -109,42 +107,5 @@ function OfferCard(props: OfferCardProps): JSX.Element {
     </article>
   );
 }
-
-function FavoriteCard(props: SpecificOfferCardProps) {
-  return (
-    <OfferCard
-      imageHeight={PreviewImgSize.favorite.height}
-      imageWidth={PreviewImgSize.favorite.width}
-      imageWrapperClassName="favorites__image-wrapper"
-      infoWrapperClassName="favorites__card-info"
-      rootClassName="favorites__card"
-      {...props}
-    />
-  );
-}
-
-function PlaceCard(props: SpecificOfferCardProps) {
-  return (
-    <OfferCard
-      imageWrapperClassName="cities__image-wrapper"
-      rootClassName="cities__place-card"
-      {...props}
-    />
-  );
-}
-
-function NearPlacesCard(props: SpecificOfferCardProps) {
-  return (
-    <OfferCard
-      imageWrapperClassName="near-places__image-wrapper"
-      rootClassName="near-places__card"
-      {...props}
-    />
-  );
-}
-
-OfferCard.Main = PlaceCard;
-OfferCard.Favorite = FavoriteCard;
-OfferCard.Offer = NearPlacesCard;
 
 export default OfferCard;

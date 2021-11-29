@@ -15,7 +15,7 @@ import { logOut } from './store/auth-store/actions';
 import { rootReducer } from './store/root-reducer';
 import { redirect } from './store/middlewares/redirect';
 import { createAPI } from './services/api';
-import App from './app/app';
+import App from './components/app/app';
 
 
 const ERROR_MESSAGE = 'Ooops, no response from server!';

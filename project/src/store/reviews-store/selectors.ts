@@ -4,10 +4,10 @@ import { Review } from '../../types/review';
 import { Store } from '../../types/store';
 
 export const getReviews = (store: Store): Review[] =>
-  store[StoreNameSpace.reviews].reviews;
+  store[StoreNameSpace.Reviews].reviews;
 
 export const getIsReviewsLoading = (store: Store): boolean =>
-  store[StoreNameSpace.reviews].isReviewsLoading;
+  store[StoreNameSpace.Reviews].isReviewsLoading;
 
 export const getReviewPostStatus = (store: Store): ReviewPostStatus =>
-  store[StoreNameSpace.reviews].reviewPostStatus;
+  store[StoreNameSpace.Reviews].reviewPostStatus;

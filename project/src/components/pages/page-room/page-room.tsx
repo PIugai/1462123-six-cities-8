@@ -26,12 +26,12 @@ import {
   getNearbyOffers
 } from '../../../store/nearby-offers-store/selectors';
 import Header from '../../header/header';
-import OfferCard from '../../offer-card/offer-card';
+import NearPlacesCard from '../../near-places-card/near-places-card';
 import OffersMap from '../../offers-map/offers-map';
 import Loader from '../../loader/loader';
 import Page404 from '../page-404/page-404';
 import ReviewsList from '../../reviews-list/reviews-list';
-import ReviewForm from '../../reviews-form/reviews-form';
+import ReviewsForm from '../../reviews-form/reviews-form';
 
 const MAX_AMOUNT_IMAGES = 6;
 
@@ -212,7 +212,7 @@ function PageRoom(): JSX.Element {
                   <section className="property__reviews reviews">
                     <ReviewsList reviews={reviews} />
                     {authStatus === AuthStatus.Auth && (
-                      <ReviewForm offerId={offerId} />
+                      <ReviewsForm offerId={offerId} />
                     )}
                   </section>
                 )}
@@ -233,7 +233,7 @@ function PageRoom(): JSX.Element {
                 <h2 className="near-places__title">Other places in the neighbourhood</h2>
                 <div className="near-places__list places__list">
                   {nearbyOffers.map((nearbyOffer) => (
-                    <OfferCard.Offer
+                    <NearPlacesCard
                       onFavoriteClick={handleNearbyFavoriteClick}
                       key={nearbyOffer.id}
                       offer={nearbyOffer}

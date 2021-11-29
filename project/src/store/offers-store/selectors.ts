@@ -7,10 +7,10 @@ import { StoreNameSpace } from '../../store/root-reducer';
 
 
 export const getOffers = (store: Store): Offer[] =>
-  store[StoreNameSpace.offers].offers;
+  store[StoreNameSpace.Offers].offers;
 
 export const getIsOffersLoading = (store: Store): boolean =>
-  store[StoreNameSpace.offers].isOffersLoading;
+  store[StoreNameSpace.Offers].isOffersLoading;
 
 export const getFilteredOffers = createSelector(
   [getOffers, getCurrentCity],

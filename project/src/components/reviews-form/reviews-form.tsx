@@ -34,11 +34,11 @@ const Ratings = [
   },
 ] as const;
 
-type ReviewFormProps = {
+type ReviewsFormProps = {
   offerId: string,
 }
 
-function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
+function ReviewsForm({ offerId }: ReviewsFormProps): JSX.Element {
   const reviewPostStatus = useSelector(getReviewPostStatus);
 
   const [
@@ -138,4 +138,4 @@ function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
   );
 }
 
-export default ReviewForm;
+export default ReviewsForm;

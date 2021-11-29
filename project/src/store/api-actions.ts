@@ -95,7 +95,7 @@ export const changeFavoriteStatusAction = (
 
   async (dispatch, _getStore, api): Promise<void> => {
     const { data } = await api.post<OfferResponse>(
-      `${APIRoute.FavoriresOffers}/${offerId}/${Number(!isFavorite)}`,
+      `${APIRoute.FavoritesOffers}/${offerId}/${Number(!isFavorite)}`,
     );
     const normalizedOffer = adaptOfferToClient(data);
 
@@ -107,7 +107,7 @@ export const changeFavoriteStatusAction = (
 export const fetchFavoritesOffersAction = (): ThunkActionResult => (
   async (dispatch, _getStore, api): Promise<void> => {
     dispatch(loadFavoritesOffersStart());
-    const { data } = await api.get<OfferResponse[]>(`${APIRoute.FavoriresOffers}`);
+    const { data } = await api.get<OfferResponse[]>(`${APIRoute.FavoritesOffers}`);
     const normalizedOffers = data.map((favoriteOffer) => (
       adaptOfferToClient(favoriteOffer)),
     );
