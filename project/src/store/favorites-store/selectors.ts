@@ -3,7 +3,7 @@ import { Offer } from '../../types/offer';
 import { Store } from '../../types/store';
 
 export const getFavoritesOffers = (store: Store): Offer[] =>
-  store[StoreNameSpace.favoritesOffers].favoritesOffers;
+  store[StoreNameSpace.FavoritesOffers].favoritesOffers;
 
 export const getIsFavoritesOffersLoading = (store: Store): boolean =>
-  store[StoreNameSpace.favoritesOffers].isFavoriteOffersLoading;
+  store[StoreNameSpace.FavoritesOffers].isFavoriteOffersLoading;

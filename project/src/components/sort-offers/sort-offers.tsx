@@ -13,7 +13,7 @@ function SortOffers(): JSX.Element {
 
   const sortRef = useRef<HTMLFormElement | null>(null);
 
-  const toogleSortMenuHandle = () => setIsSortMenuActive((prev) => !prev);
+  const handleSortMenuClick = () => setIsSortMenuActive((prev) => !prev);
 
   useEffect(() => {
     const handleOutsideClick = (evt: MouseEvent) => {
@@ -39,7 +39,7 @@ function SortOffers(): JSX.Element {
     >
       <span className="places__sorting-caption">Sort by</span>
       <span
-        onClick={toogleSortMenuHandle}
+        onClick={handleSortMenuClick}
         className="places__sorting-type"
         tabIndex={0}
       >
@@ -67,7 +67,7 @@ function SortOffers(): JSX.Element {
               tabIndex={0}
               onClick={() => {
                 dispatch(setSortOffersBy(option));
-                toogleSortMenuHandle();
+                handleSortMenuClick();
               }}
             >
               {option}

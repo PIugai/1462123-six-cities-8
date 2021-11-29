@@ -1,6 +1,6 @@
 import { FormEvent, useMemo, useRef } from 'react';
 import { Redirect } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppRoute, AuthStatus, CitiesNames } from '../../../const';
 import { getRandomCity } from '../../../utils';
@@ -41,6 +41,8 @@ function PageSignIn(): JSX.Element {
 
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
+  const history = useHistory();
+
   const handleFieldsChange = (evt: FormEvent<HTMLFormElement>) => {
     if (evt.target === loginRef.current) {
       loginRef.current.setCustomValidity(validateEmail(loginRef.current.value));
@@ -61,11 +63,12 @@ function PageSignIn(): JSX.Element {
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    if (loginRef.current && passwordRef.current) {
+    if (loginRef.current !== null && passwordRef.current !== null) {
       dispatch(logInAction({
         login: loginRef.current.value,
         password: passwordRef.current.value,
       }));
+      history.push(AppRoute.Main);
     }
   };
 
@@ -95,7 +98,7 @@ function PageSignIn(): JSX.Element {
                   type="email"
                   name="email"
                   placeholder="Email"
-                  autoComplete="user-name"
+                  // autoComplete="user-name"
                   required
                 />
               </div>
@@ -107,7 +110,7 @@ function PageSignIn(): JSX.Element {
                   type="password"
                   name="password"
                   placeholder="Password"
-                  autoComplete="current-password"
+                  // autoComplete="current-password"
                   required
                 />
               </div>

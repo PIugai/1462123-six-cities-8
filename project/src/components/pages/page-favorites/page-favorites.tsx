@@ -9,7 +9,7 @@ import {
   changeFavoriteStatusAction
 } from '../../../store/api-actions';
 import Header from '../../header/header';
-import OfferCard from '../../offer-card/offer-card';
+import FavoriteCard from '../../favorite-card/favorite-card';
 import Footer from '../../footer/footer';
 import { AppRoute } from '../../../const';
 import { changeCurrentCity } from '../../../store/app-store/actions';
@@ -18,7 +18,7 @@ import Loader from '../../loader/loader';
 
 type GrouppedOffers = Record<string, Offer[]>
 
-function FavoritesPage(): JSX.Element {
+function PageFavorites(): JSX.Element {
   const dispatch = useDispatch();
 
   const favoritesOffers = useSelector(getFavoritesOffers);
@@ -106,7 +106,7 @@ function FavoritesPage(): JSX.Element {
                       </div>
                       <div className="favorites__places">
                         {cityOffers.map((offer) => (
-                          <OfferCard.Favorite
+                          <FavoriteCard
                             key={offer.id}
                             offer={offer}
                             onFavoriteClick={handleFavoriteClick}
@@ -126,4 +126,4 @@ function FavoritesPage(): JSX.Element {
   );
 }
 
-export default FavoritesPage;
+export default PageFavorites;

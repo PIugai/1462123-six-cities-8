@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Offer } from '../../types/offer';
 import  SortOffers  from '../sort-offers/sort-offers';
-import OfferCard from '../offer-card/offer-card';
+import PlaceCard from '../place-card/place-card';
 import OffersMap from '../offers-map/offers-map';
 import NoOffers from '../no-offers/no-offers';
 import { changeFavoriteStatusAction } from '../../store/api-actions';
@@ -48,7 +48,7 @@ function PlacesList({currentCity, offers, hasNoOffers}: OffersListProps): JSX.El
               <SortOffers />
               <div className="cities__places-list places__list tabs__content">
                 {offers.map((offer) => (
-                  <OfferCard.Main
+                  <PlaceCard
                     key={offer.id}
                     offer={offer}
                     onMouseEnter={handleOfferMouseEnter}

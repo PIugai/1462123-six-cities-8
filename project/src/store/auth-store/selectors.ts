@@ -4,6 +4,6 @@ import { User } from '../../types/user';
 import { StoreNameSpace } from '../../store/root-reducer';
 
 export const getAuthStatus = (store: Store): AuthStatus =>
-  store[StoreNameSpace.auth].authStatus;
+  store[StoreNameSpace.Auth].authStatus;
 
-export const getUser = (store: Store): User | null => store[StoreNameSpace.auth].user;
+export const getUser = (store: Store): User | null => store[StoreNameSpace.Auth].user;

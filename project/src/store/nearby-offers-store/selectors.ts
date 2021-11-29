@@ -3,7 +3,7 @@ import { Offer } from '../../types/offer';
 import { Store } from '../../types/store';
 
 export const getNearbyOffers = (store: Store): Offer[] =>
-  store[StoreNameSpace.nearbyOffers].nearbyOffers;
+  store[StoreNameSpace.NearbyOffers].nearbyOffers;
 
 export const getIsNearbyOffersLoading = (store: Store): boolean =>
-  store[StoreNameSpace.nearbyOffers].isNearbyOffersLoading;
+  store[StoreNameSpace.NearbyOffers].isNearbyOffersLoading;

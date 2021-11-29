@@ -8,23 +8,23 @@ import { reviewsReducer } from './reviews-store/reviews-store';
 import { favoritesReducer } from './favorites-store/favorites-store';
 
 export enum StoreNameSpace {
-  app = 'APP',
-  auth = 'AUTH',
-  offers = 'OFFERS',
-  nearbyOffers = 'NEARBY_OFFERS',
-  offer = 'OFFER',
-  reviews = 'REVIEWS',
-  favoritesOffers = 'FAVORITES_OFFERS',
+  App = 'APP',
+  Auth = 'AUTH',
+  Offers = 'OFFERS',
+  NearbyOffers = 'NEARBY_OFFERS',
+  Offer = 'OFFER',
+  Reviews = 'REVIEWS',
+  FavoritesOffers = 'FAVORITES_OFFERS',
 }
 
 export const rootReducer = combineReducers({
-  [StoreNameSpace.app]: appReducer,
-  [StoreNameSpace.auth]: authReducer,
-  [StoreNameSpace.offers]: offersReducer,
-  [StoreNameSpace.nearbyOffers]: nearbyOffersReducer,
-  [StoreNameSpace.offer]: offerReducer,
-  [StoreNameSpace.reviews]: reviewsReducer,
-  [StoreNameSpace.favoritesOffers]: favoritesReducer,
+  [StoreNameSpace.App]: appReducer,
+  [StoreNameSpace.Auth]: authReducer,
+  [StoreNameSpace.Offers]: offersReducer,
+  [StoreNameSpace.NearbyOffers]: nearbyOffersReducer,
+  [StoreNameSpace.Offer]: offerReducer,
+  [StoreNameSpace.Reviews]: reviewsReducer,
+  [StoreNameSpace.FavoritesOffers]: favoritesReducer,
 });
 
 export type RootStore = ReturnType<typeof rootReducer>;
